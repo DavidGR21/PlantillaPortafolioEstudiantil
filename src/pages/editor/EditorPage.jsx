@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AppHeader } from '../../components/layout/AppHeader.jsx'
 import { SectionsManager } from '../../components/editor/SectionsManager.jsx'
 import { SubsectionsManager } from '../../components/editor/SubsectionsManager.jsx'
 import { PostsManager } from '../../components/editor/PostsManager.jsx'
 import { FullPageLoader } from '../../components/ui/Spinner.jsx'
 import { StatusMessage } from '../../components/ui/StatusMessage.jsx'
+import { PortfolioSettingsModal } from '../../components/editor/PortfolioSettingsModal.jsx'
 import { usePublicPortfolio } from '../../hooks/usePublicPortfolio.js'
+import { themeToStyle } from '../../utils/theme.js'
 import '../../components/editor/Editor.css'
 
 /** Modo edición: /p/:slug/editar (solo el dueño). */
@@ -15,6 +17,15 @@ export default function EditorPage() {
   const { data, error, isLoading, reload } = usePublicPortfolio(slug)
   const [selectedId, setSelectedId] = useState(null)
   const [selectedSubId, setSelectedSubId] = useState(null)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const navigate = useNavigate()
+
+  async function handleSettingsSaved(updated) {
+    setIsSettingsOpen(false)
+    // Si cambió la dirección, el editor pasa a la nueva URL (y carga desde ahí).
+    if (updated.slug !== slug) navigate(`/p/${updated.slug}/editar`, { replace: true })
+    else await reload().catch(() => {})
+  }
 
   if (isLoading) return <FullPageLoader label="Cargando editor…" />
 
@@ -49,7 +60,7 @@ export default function EditorPage() {
   return (
     <>
       <AppHeader />
-      <main className="page editor">
+      <main className="page editor" style={themeToStyle(portfolio.theme)}>
         <header className="editor__header">
           <div>
             <p className="editor__eyebrow">Editando</p>
@@ -59,6 +70,9 @@ export default function EditorPage() {
             <Link className="btn btn--ghost btn--sm" to="/dashboard">
               ← Mis portafolios
             </Link>
+            <button type="button" className="btn btn--ghost btn--sm" onClick={() => setIsSettingsOpen(true)}>
+              ⚙ Configuración
+            </button>
             <a className="btn btn--primary btn--sm" href={`/p/${portfolio.slug}`} target="_blank" rel="noreferrer">
               Ver portafolio ↗
             </a>
@@ -113,6 +127,14 @@ export default function EditorPage() {
           </section>
         </div>
       </main>
+
+      {isSettingsOpen && (
+        <PortfolioSettingsModal
+          portfolio={portfolio}
+          onSaved={handleSettingsSaved}
+          onClose={() => setIsSettingsOpen(false)}
+        />
+      )}
     </>
   )
 }

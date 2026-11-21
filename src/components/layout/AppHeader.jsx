@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
 import './AppHeader.css'
+
+const navClass = ({ isActive }) => `app-header__link${isActive ? ' app-header__link--active' : ''}`
 
 /** Barra superior del área privada (panel del estudiante y administración). */
 export function AppHeader() {
@@ -25,8 +27,14 @@ export function AppHeader() {
       </Link>
 
       <nav className="app-header__nav" aria-label="Navegación principal">
-        <Link to="/dashboard">Mis portafolios</Link>
-        {user?.role === 'admin' && <Link to="/admin">Administración</Link>}
+        <NavLink to="/dashboard" className={navClass}>
+          Mis portafolios
+        </NavLink>
+        {user?.role === 'admin' && (
+          <NavLink to="/admin" className={navClass}>
+            Administración
+          </NavLink>
+        )}
       </nav>
 
       <div className="app-header__user">

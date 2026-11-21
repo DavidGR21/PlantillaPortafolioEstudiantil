@@ -65,6 +65,7 @@
   padding: 1.25rem;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
+  border-top: 4px solid var(--color-primary); /* color del portafolio */
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
 }

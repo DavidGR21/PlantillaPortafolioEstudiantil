@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formatDate, pluralize } from '../../utils/format.js'
 import { publicPortfolioUrl } from '../../utils/slug.js'
+import { themeToStyle } from '../../utils/theme.js'
 
 export function PortfolioCard({ portfolio, onDelete }) {
   const [copied, setCopied] = useState(false)
@@ -19,7 +20,10 @@ export function PortfolioCard({ portfolio, onDelete }) {
   }
 
   return (
-    <article className={`portfolio-card${isBlocked ? ' portfolio-card--blocked' : ''}`}>
+    <article
+      className={`portfolio-card${isBlocked ? ' portfolio-card--blocked' : ''}`}
+      style={themeToStyle(portfolio.theme)}
+    >
       <header className="portfolio-card__header">
         <h2 className="portfolio-card__title">{portfolio.title}</h2>
         <span className={`badge ${isBlocked ? 'badge--danger' : 'badge--success'}`}>

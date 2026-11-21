@@ -217,7 +217,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - `feat(admin): bitácora de acciones`
 
 ### Fase 6 – Pulido y despliegue
-**Paso 18 – Diseño de la plantilla**
+**Paso 18 – Diseño de la plantilla** ✅
 - Tema visual, responsive, `theme` (jsonb) para colores por portafolio, estados de carga y vacíos.
 - `style: diseño responsive de la plantilla`
 

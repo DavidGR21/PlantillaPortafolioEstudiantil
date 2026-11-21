@@ -43,3 +43,9 @@
   .app-header__user { margin-left: auto; }
   .app-header__name { display: none; }
 }
+
+.app-header__link--active,
+.app-header__nav .app-header__link--active:hover {
+  color: var(--color-primary);
+  font-weight: 600;
+}

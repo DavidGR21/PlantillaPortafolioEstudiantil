@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { FullPageLoader } from '../../components/ui/Spinner.jsx'
+import { PortfolioSkeleton } from '../../components/portfolio/PortfolioSkeleton.jsx'
 import { StatusMessage } from '../../components/ui/StatusMessage.jsx'
 import { PortfolioHeader } from '../../components/portfolio/PortfolioHeader.jsx'
 import { PortfolioNav } from '../../components/portfolio/PortfolioNav.jsx'
@@ -23,7 +23,7 @@ export default function PortfolioPage() {
     }
   }, [title])
 
-  if (isLoading) return <FullPageLoader label="Cargando portafolio…" />
+  if (isLoading) return <PortfolioSkeleton />
 
   if (error) {
     if (error.code === 'PORTFOLIO_UNAVAILABLE') {
