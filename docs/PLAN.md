@@ -193,7 +193,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - `_lib/storage.js`: URL prefirmada de subida, URL de lectura, borrado.
 - `feat(api): integración con el bucket de archivos`
 
-**Paso 13 – Subida de PDF/imágenes**
+**Paso 13 – Subida de PDF/imágenes** ✅
 - Flujo: `presign` → `PUT` directo al bucket con barra de progreso → registrar en `post_files`.
 - Validar tipo (PDF, JPG, PNG, WEBP, GIF) y tamaño en cliente **y** servidor. Clave: `portfolios/{portfolioId}/{postId}/{uuid}-{nombre}`.
 - Eliminar archivo = borrar del bucket + borrar fila.

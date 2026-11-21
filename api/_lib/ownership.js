@@ -68,3 +68,23 @@ export async function getOwnedPost(user, postId) {
   }
   return post
 }
+
+/**
+ * Devuelve el archivo (con post_id) si su portafolio pertenece al usuario.
+ */
+export async function getOwnedFile(user, fileId) {
+  const [file] = await sql`
+    SELECT f.*, p.owner_id
+    FROM post_files f
+    JOIN posts po ON po.id = f.post_id
+    JOIN subsections ss ON ss.id = po.subsection_id
+    JOIN sections s ON s.id = ss.section_id
+    JOIN portfolios p ON p.id = s.portfolio_id
+    WHERE f.id = ${fileId}
+  `
+  if (!file) throw new HttpError(404, 'Archivo no encontrado', 'NOT_FOUND')
+  if (file.owner_id !== user.id) {
+    throw new HttpError(403, 'Este archivo no es tuyo', 'NOT_OWNER')
+  }
+  return file
+}

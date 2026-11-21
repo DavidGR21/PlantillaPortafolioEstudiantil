@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ConfirmDialog } from '../ui/ConfirmDialog.jsx'
+import { PostFiles } from './PostFiles.jsx'
 import { PostFormModal } from './PostFormModal.jsx'
 import * as contentService from '../../services/contentService.js'
 import { formatDate, pluralize } from '../../utils/format.js'
@@ -90,6 +91,7 @@ export function PostsManager({ subsection, onChanged }) {
                 <p className="post-item__meta">
                   {pluralize(post.files.length, 'archivo', 'archivos')} · {formatDate(post.createdAt)}
                 </p>
+                <PostFiles post={post} onChanged={onChanged} />
               </div>
 
               <div className="post-item__actions">

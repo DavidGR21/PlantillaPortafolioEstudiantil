@@ -70,7 +70,7 @@ export function PostFormModal({ post, subsectionTitle, onSubmit, onClose }) {
 
         {!isEdit && (
           <p className="field__hint">
-            Después de crearla podrás adjuntar sus PDF e imágenes.
+            Después de crearla podrás adjuntar sus PDF e imágenes desde la lista de publicaciones.
           </p>
         )}
 
