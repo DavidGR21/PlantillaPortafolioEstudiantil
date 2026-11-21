@@ -1,44 +1,46 @@
-/**
- * Esqueleto de carga del portafolio público: misma forma que la página real,
- * así el contenido no "salta" cuando llega.
- */
+import './Portfolio.css'
+
+/** Esqueleto de carga con la misma forma que el portafolio (sin saltos al cargar). */
 export function PortfolioSkeleton() {
   return (
-    <div className="pf" aria-busy="true">
+    <div className="site" aria-busy="true">
       <span className="visually-hidden" role="status">
         Cargando portafolio…
       </span>
-      <header className="pf-header">
-        <div className="pf-header__inner">
-          <span className="pf-header__avatar skeleton skeleton--circle" />
-          <div className="pf-header__text">
-            <span className="skeleton skeleton--title" />
-            <span className="skeleton skeleton--text" style={{ width: '40%' }} />
+      <aside className="site-sidebar site-sidebar--skeleton" aria-hidden="true">
+        <div className="site-sidebar__brand">
+          <span className="site-monogram skeleton" />
+          <div className="site-sidebar__brand-text">
+            <span className="skeleton skeleton--text" style={{ width: '80%', height: '1rem' }} />
+            <span className="skeleton skeleton--text" style={{ width: '55%' }} />
           </div>
         </div>
-      </header>
-      <nav className="pf-nav" aria-hidden="true">
-        <div className="pf-nav__list">
-          {[6, 8, 5].map((w, i) => (
-            <span key={i} className="skeleton skeleton--text pf-skeleton__tab" style={{ width: `${w}rem` }} />
-          ))}
+        {[70, 55, 80, 60].map((w, i) => (
+          <span key={i} className="skeleton skeleton--text" style={{ width: `${w}%`, height: '1rem', margin: '1.1rem 0.75rem 0' }} />
+        ))}
+      </aside>
+      <main className="site-main" aria-hidden="true">
+        <div className="site-hero">
+          <div className="site-hero__inner">
+            <span className="skeleton skeleton--hero-crumb" />
+            <span className="skeleton skeleton--hero-title" />
+          </div>
         </div>
-      </nav>
-      <main className="pf-main" aria-hidden="true">
-        <span className="skeleton skeleton--title" style={{ width: '30%' }} />
-        <div className="pf-posts">
-          {[0, 1].map((i) => (
-            <div key={i} className="pf-post">
-              <span className="skeleton skeleton--text" style={{ width: '50%', height: '1.2rem' }} />
-              <span className="skeleton skeleton--text" />
-              <span className="skeleton skeleton--text" style={{ width: '80%' }} />
-              <div className="pf-files__images" style={{ marginTop: '1rem' }}>
-                <span className="skeleton skeleton--image" />
-                <span className="skeleton skeleton--image" />
+        {[0, 1].map((i) => (
+          <div key={i} className={`doc-row${i === 1 ? ' doc-row--alt' : ''}`}>
+            <div className="doc-row__inner">
+              <div className="doc-row__info">
+                <span className="skeleton skeleton--text" style={{ width: '35%' }} />
+                <span className="skeleton skeleton--text" style={{ width: '75%', height: '1.6rem', marginTop: '0.75rem' }} />
+                <span className="skeleton skeleton--text" style={{ width: '90%' }} />
+                <span className="skeleton skeleton--text" style={{ width: '70%' }} />
+              </div>
+              <div className="doc-row__viewer">
+                <span className="skeleton skeleton--viewer" />
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </main>
     </div>
   )
