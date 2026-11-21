@@ -183,12 +183,12 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Crear "Parcial 1", "Parcial 2"..., renombrar, eliminar, reordenar.
 - `feat: gestión de submódulos/parciales`
 
-**Paso 11 – Publicaciones (sin archivos)**
+**Paso 11 – Publicaciones (sin archivos)** ✅
 - Título obligatorio, descripción opcional; crear, editar, eliminar, reordenar.
 - `feat: publicaciones dentro de cada parcial`
 
 ### Fase 4 – Archivos
-**Paso 12 – Bucket**
+**Paso 12 – Bucket** ✅
 - Crear bucket, configurar CORS (permitir `PUT` desde tu dominio de Vercel y `localhost`), variables `STORAGE_*`.
 - `_lib/storage.js`: URL prefirmada de subida, URL de lectura, borrado.
 - `feat(api): integración con el bucket de archivos`

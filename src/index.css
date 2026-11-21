@@ -173,10 +173,27 @@ a {
   border-radius: var(--radius-md);
 }
 
-.field input:focus {
+.field textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  line-height: 1.5;
+  color: inherit;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.field__hint--right {
+  text-align: right;
 }
 
 .field code {

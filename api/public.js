@@ -1,6 +1,7 @@
 import { sql } from './_lib/db.js'
 import { getSessionUser } from './_lib/auth.js'
 import { createHandler, HttpError, sendJson } from './_lib/http.js'
+import { createDownloadUrl } from './_lib/storage.js'
 import { SLUG_REGEX } from './_lib/validators/portfolio.js'
 
 /*
@@ -12,6 +13,35 @@ import { SLUG_REGEX } from './_lib/validators/portfolio.js'
  * el resto recibe 403 PORTFOLIO_UNAVAILABLE.
  */
 
+/**
+ * El bucket es privado: cada archivo recibe una URL firmada temporal
+ * (url = ver en el navegador, downloadUrl = descargar). La clave interna
+ * del bucket no se envía al cliente.
+ */
+async function signSectionFiles(sections) {
+  const signFile = async ({ key, ...file }) => {
+    const [url, downloadUrl] = await Promise.all([
+      createDownloadUrl(key, { fileName: file.name, contentType: file.mimeType }),
+      createDownloadUrl(key, { fileName: file.name, contentType: file.mimeType, download: true }),
+    ])
+    return { ...file, url, downloadUrl }
+  }
+
+  return Promise.all(
+    sections.map(async (section) => ({
+      ...section,
+      subsections: await Promise.all(
+        section.subsections.map(async (sub) => ({
+          ...sub,
+          posts: await Promise.all(
+            sub.posts.map(async (post) => ({ ...post, files: await Promise.all(post.files.map(signFile)) })),
+          ),
+        })),
+      ),
+    })),
+  )
+}
+
 async function getPublicPortfolio(req, res) {
   const slug = String(req.query.slug ?? '').trim().toLowerCase()
   if (!SLUG_REGEX.test(slug)) throw new HttpError(404, 'Portafolio no encontrado', 'NOT_FOUND')
@@ -19,7 +49,7 @@ async function getPublicPortfolio(req, res) {
   // Árbol completo en una sola consulta: apartados > parciales > publicaciones > archivos.
   const [row] = await sql`
     SELECT
-      p.id, p.owner_id, p.slug, p.title, p.subtitle, p.description, p.avatar_url, p.theme,
+      p.id, p.owner_id, p.slug, p.title, p.subtitle, p.description, p.avatar_key, p.theme,
       p.status, p.updated_at,
       u.full_name AS owner_name, u.is_active AS owner_active,
       COALESCE((
@@ -35,7 +65,7 @@ async function getPublicPortfolio(req, res) {
                   'files', COALESCE((
                     SELECT json_agg(json_build_object(
                       'id', f.id, 'kind', f.kind, 'name', f.original_name,
-                      'mimeType', f.mime_type, 'size', f.size_bytes, 'url', f.url
+                      'mimeType', f.mime_type, 'size', f.size_bytes, 'key', f.storage_key
                     ) ORDER BY f.position, f.created_at)
                     FROM post_files f WHERE f.post_id = po.id
                   ), '[]'::json)
@@ -65,6 +95,11 @@ async function getPublicPortfolio(req, res) {
     throw new HttpError(403, 'Este portafolio no está disponible en este momento', 'PORTFOLIO_UNAVAILABLE')
   }
 
+  const [sections, avatarUrl] = await Promise.all([
+    signSectionFiles(row.sections),
+    row.avatar_key ? createDownloadUrl(row.avatar_key) : null,
+  ])
+
   return sendJson(res, 200, {
     portfolio: {
       id: row.id,
@@ -72,13 +107,13 @@ async function getPublicPortfolio(req, res) {
       title: row.title,
       subtitle: row.subtitle,
       description: row.description,
-      avatarUrl: row.avatar_url,
+      avatarUrl,
       theme: row.theme,
       ownerName: row.owner_name,
       updatedAt: row.updated_at,
       status: row.status,
     },
-    sections: row.sections,
+    sections,
     viewer: {
       canEdit: isOwner,
       preview: !isPublic, // true = el público NO lo ve; solo dueño/admin

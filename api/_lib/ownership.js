@@ -49,3 +49,22 @@ export async function getOwnedSubsection(user, subsectionId) {
   }
   return subsection
 }
+
+/**
+ * Devuelve la publicación (con subsection_id y portfolio_id) si su portafolio pertenece al usuario.
+ */
+export async function getOwnedPost(user, postId) {
+  const [post] = await sql`
+    SELECT po.*, s.portfolio_id, p.owner_id
+    FROM posts po
+    JOIN subsections ss ON ss.id = po.subsection_id
+    JOIN sections s ON s.id = ss.section_id
+    JOIN portfolios p ON p.id = s.portfolio_id
+    WHERE po.id = ${postId}
+  `
+  if (!post) throw new HttpError(404, 'Publicación no encontrada', 'NOT_FOUND')
+  if (post.owner_id !== user.id) {
+    throw new HttpError(403, 'Esta publicación no es tuya', 'NOT_OWNER')
+  }
+  return post
+}

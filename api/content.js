@@ -1,18 +1,22 @@
 import { sql } from './_lib/db.js'
 import { requireUser } from './_lib/auth.js'
 import { createHandler, HttpError, readBody, sendJson } from './_lib/http.js'
-import { getOwnedPortfolio, getOwnedSection, getOwnedSubsection } from './_lib/ownership.js'
+import { getOwnedPortfolio, getOwnedPost, getOwnedSection, getOwnedSubsection } from './_lib/ownership.js'
 import { slugify, uniqueSlug } from './_lib/slug.js'
 import { deleteStorageObjects } from './_lib/storage.js'
 import {
+  createPostSchema,
   createSectionSchema,
   createSubsectionSchema,
   idSchema,
+  MAX_POSTS_PER_SUBSECTION,
   MAX_SECTIONS_PER_PORTFOLIO,
   MAX_SUBSECTIONS_PER_SECTION,
   RESERVED_SECTION_SLUGS,
+  reorderPostsSchema,
   reorderSectionsSchema,
   reorderSubsectionsSchema,
+  updatePostSchema,
   updateSectionSchema,
   updateSubsectionSchema,
 } from './_lib/validators/content.js'
@@ -32,7 +36,13 @@ import {
  *   PATCH  ?type=subsection&action=reorder  { sectionId, ids[] }   -> { ok }
  *   DELETE ?type=subsection&id=<uuid>                              -> { ok, filesDeleted, filesFailed }
  *
- * (Las publicaciones se agregan en el paso 11.)
+ * Publicaciones (type=post):
+ *   POST   ?type=post                       { subsectionId, title, description? } -> 201 { post }
+ *   PATCH  ?type=post&id=<uuid>             { title?, description? }              -> { post }
+ *   PATCH  ?type=post&action=reorder        { subsectionId, ids[] }               -> { ok }
+ *   DELETE ?type=post&id=<uuid>                                                   -> { ok, filesDeleted, filesFailed }
+ *
+ * (Los archivos de cada publicación se gestionan en /api/files, pasos 12-13.)
  */
 
 // ---------- Utilidades -----------------------------------------------------
@@ -223,6 +233,80 @@ async function deleteSubsection(req, res, user) {
   return sendJson(res, 200, { ok: true, ...result })
 }
 
+// ---------- Publicaciones ----------------------------------------------------
+
+function toPost(row) {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    position: row.position,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
+async function createPost(req, res, user) {
+  const { subsectionId, title, description } = createPostSchema.parse(readBody(req))
+  await getOwnedSubsection(user, subsectionId)
+
+  const [{ count }] = await sql`SELECT count(*)::int AS count FROM posts WHERE subsection_id = ${subsectionId}`
+  if (count >= MAX_POSTS_PER_SUBSECTION) {
+    throw new HttpError(409, `Máximo ${MAX_POSTS_PER_SUBSECTION} publicaciones por parcial.`, 'POST_LIMIT_REACHED')
+  }
+
+  const [row] = await sql`
+    INSERT INTO posts (subsection_id, title, description, position)
+    VALUES (
+      ${subsectionId}, ${title}, ${description ?? null},
+      (SELECT COALESCE(max(position), 0) + 1 FROM posts WHERE subsection_id = ${subsectionId})
+    )
+    RETURNING *
+  `
+  return sendJson(res, 201, { post: toPost(row) })
+}
+
+async function updatePost(req, res, user) {
+  const post = await getOwnedPost(user, idSchema.parse(req.query.id))
+  const data = updatePostSchema.parse(readBody(req))
+  const has = (key) => Object.hasOwn(data, key)
+
+  const [row] = await sql`
+    UPDATE posts SET
+      title       = CASE WHEN ${has('title')}       THEN ${data.title ?? null}       ELSE title       END,
+      description = CASE WHEN ${has('description')} THEN ${data.description ?? null} ELSE description END
+    WHERE id = ${post.id}
+    RETURNING *
+  `
+  return sendJson(res, 200, { post: toPost(row) })
+}
+
+async function reorderPosts(req, res, user) {
+  const { subsectionId, ids } = reorderPostsSchema.parse(readBody(req))
+  await getOwnedSubsection(user, subsectionId)
+  assertSameItems(await sql`SELECT id FROM posts WHERE subsection_id = ${subsectionId}`, ids, 'publicaciones')
+
+  await sql`
+    UPDATE posts po
+    SET position = t.ord
+    FROM unnest(${ids}::uuid[]) WITH ORDINALITY AS t(id, ord)
+    WHERE po.id = t.id AND po.subsection_id = ${subsectionId}
+  `
+  return sendJson(res, 200, { ok: true })
+}
+
+async function deletePost(req, res, user) {
+  const post = await getOwnedPost(user, idSchema.parse(req.query.id))
+
+  const keys = (await sql`SELECT storage_key FROM post_files WHERE post_id = ${post.id}`).map(
+    (r) => r.storage_key,
+  )
+
+  await sql`DELETE FROM posts WHERE id = ${post.id}`
+  const result = await cleanupFiles(keys, `publicación ${post.id}`)
+  return sendJson(res, 200, { ok: true, ...result })
+}
+
 // ---------- Enrutado -----------------------------------------------------
 
 /** PATCH con ?action=reorder reordena; si no, actualiza el elemento ?id= */
@@ -239,6 +323,11 @@ const routes = {
     POST: createSubsection,
     PATCH: patchOrReorder(updateSubsection, reorderSubsections),
     DELETE: deleteSubsection,
+  },
+  post: {
+    POST: createPost,
+    PATCH: patchOrReorder(updatePost, reorderPosts),
+    DELETE: deletePost,
   },
 }
 

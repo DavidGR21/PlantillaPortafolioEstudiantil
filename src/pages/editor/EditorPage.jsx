@@ -3,10 +3,10 @@ import { Link, useParams } from 'react-router-dom'
 import { AppHeader } from '../../components/layout/AppHeader.jsx'
 import { SectionsManager } from '../../components/editor/SectionsManager.jsx'
 import { SubsectionsManager } from '../../components/editor/SubsectionsManager.jsx'
+import { PostsManager } from '../../components/editor/PostsManager.jsx'
 import { FullPageLoader } from '../../components/ui/Spinner.jsx'
 import { StatusMessage } from '../../components/ui/StatusMessage.jsx'
 import { usePublicPortfolio } from '../../hooks/usePublicPortfolio.js'
-import { pluralize } from '../../utils/format.js'
 import '../../components/editor/Editor.css'
 
 /** Modo edición: /p/:slug/editar (solo el dueño). */
@@ -102,30 +102,7 @@ export default function EditorPage() {
                 />
 
                 {selectedSub && (
-                  <div className="editor__posts">
-                    <header className="editor-panel__header">
-                      <h3 className="editor-panel__title">Publicaciones de {selectedSub.title}</h3>
-                      <span className="text-muted editor-panel__count">
-                        {pluralize(selectedSub.posts.length, 'publicación', 'publicaciones')}
-                      </span>
-                    </header>
-                    {selectedSub.posts.length > 0 && (
-                      <ul className="editor__post-list">
-                        {selectedSub.posts.map((post) => (
-                          <li key={post.id}>
-                            <strong>{post.title}</strong>
-                            <span className="text-muted">
-                              {' '}
-                              · {pluralize(post.files.length, 'archivo', 'archivos')}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <div className="editor__placeholder">
-                      Próximamente: aquí podrás crear y editar publicaciones con sus PDF e imágenes.
-                    </div>
-                  </div>
+                  <PostsManager key={selectedSub.id} subsection={selectedSub} onChanged={reload} />
                 )}
               </>
             ) : (
