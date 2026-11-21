@@ -253,3 +253,73 @@
   font-size: 1rem;
   font-weight: 700;
 }
+
+/* ---------- Filtro segmentado (Todos / Publicados / Bloqueados) ---------- */
+.segmented {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 0.2rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.segmented__option {
+  padding: 0.35rem 0.8rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.segmented__option--active {
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.12);
+}
+
+@media (max-width: 760px) {
+  .admin-toolbar {
+    flex-wrap: wrap;
+  }
+}
+
+/* ---------- Celdas de portafolios --------------------------------------- */
+.status-cell {
+  display: grid;
+  justify-items: start;
+  gap: 0.25rem;
+  max-width: 16rem;
+}
+
+.status-cell__reason {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.content-cell {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .status-cell {
+    justify-items: end;
+    max-width: 60%;
+    text-align: right;
+  }
+
+  .content-cell {
+    white-space: normal;
+    text-align: right;
+  }
+}

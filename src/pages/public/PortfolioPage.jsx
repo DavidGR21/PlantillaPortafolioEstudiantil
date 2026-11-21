@@ -59,9 +59,11 @@ export default function PortfolioPage() {
     <div className="pf" style={themeToStyle(portfolio.theme)}>
       {viewer.preview && (
         <p className="pf-preview-banner" role="status">
-          {portfolio.status === 'blocked'
-            ? 'Este portafolio está bloqueado por un administrador: solo tú puedes verlo.'
-            : 'Este portafolio no es visible públicamente en este momento.'}
+          {!viewer.canEdit
+            ? 'Vista de administrador: este portafolio no es visible para el público.'
+            : portfolio.status === 'blocked'
+              ? 'Este portafolio está bloqueado por un administrador: solo tú puedes verlo.'
+              : 'Este portafolio no es visible públicamente en este momento.'}
         </p>
       )}
 

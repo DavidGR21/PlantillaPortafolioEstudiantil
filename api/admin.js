@@ -3,9 +3,12 @@ import { sql } from './_lib/db.js'
 import { requireAdmin } from './_lib/auth.js'
 import { auditQuery } from './_lib/audit.js'
 import { createHandler, HttpError, readBody, sendJson } from './_lib/http.js'
+import { deleteStorageObjects } from './_lib/storage.js'
 import {
+  blockPortfolioSchema,
   createUserSchema,
   idSchema,
+  listPortfoliosSchema,
   listUsersSchema,
   resetPasswordSchema,
   updateUserSchema,
@@ -20,7 +23,14 @@ import {
  *   PATCH ?resource=users&id=<uuid> { fullName?, role?, maxPortfolios?, isActive? }   -> { user }
  *   POST  ?resource=users&id=<uuid>&action=reset-password { password }                -> { ok }
  *
- * (Portafolios y bitácora se agregan en los pasos 16 y 17.)
+ * Portafolios (resource=portfolios):
+ *   GET    ?resource=portfolios[&q=texto][&status=all|active|blocked] -> { portfolios }
+ *   PATCH  ?resource=portfolios&id=<uuid>&action=block   { reason }   -> { portfolio }
+ *   PATCH  ?resource=portfolios&id=<uuid>&action=unblock              -> { portfolio }
+ *   DELETE ?resource=portfolios&id=<uuid>                             -> { ok, filesDeleted, filesFailed }
+ *   (Para VER el contenido, el admin usa /api/public: ve también los bloqueados.)
+ *
+ * (La bitácora se agrega en el paso 17.)
  * Cada cambio queda registrado en admin_actions.
  */
 
@@ -167,6 +177,151 @@ async function resetPassword(req, res, admin) {
   return sendJson(res, 200, { ok: true })
 }
 
+// ---------- Portafolios (moderación) ------------------------------------------
+
+function toAdminPortfolio(row) {
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    subtitle: row.subtitle,
+    status: row.status,
+    blockedReason: row.blocked_reason,
+    blockedAt: row.blocked_at,
+    blockedByName: row.blocked_by_name ?? null,
+    owner: {
+      id: row.owner_id,
+      fullName: row.owner_name,
+      email: row.owner_email,
+      isActive: row.owner_active,
+    },
+    sectionsCount: row.sections_count,
+    postsCount: row.posts_count,
+    filesCount: row.files_count,
+    filesSize: Number(row.files_size),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
+/** Portafolios con dueño y estadísticas. `where` filtra por id si se indica. */
+function portfoliosQuery({ id = null, pattern = null, status = 'all' }) {
+  return sql`
+    SELECT
+      p.*,
+      u.full_name AS owner_name, u.email AS owner_email, u.is_active AS owner_active,
+      b.full_name AS blocked_by_name,
+      (SELECT count(*)::int FROM sections s WHERE s.portfolio_id = p.id) AS sections_count,
+      st.posts_count, st.files_count, st.files_size
+    FROM portfolios p
+    JOIN users u ON u.id = p.owner_id
+    LEFT JOIN users b ON b.id = p.blocked_by
+    CROSS JOIN LATERAL (
+      SELECT
+        count(DISTINCT po.id)::int        AS posts_count,
+        count(f.id)::int                  AS files_count,
+        COALESCE(sum(f.size_bytes), 0)    AS files_size
+      FROM sections s
+      JOIN subsections ss ON ss.section_id = s.id
+      JOIN posts po ON po.subsection_id = ss.id
+      LEFT JOIN post_files f ON f.post_id = po.id
+      WHERE s.portfolio_id = p.id
+    ) st
+    WHERE (${id}::uuid IS NULL OR p.id = ${id}::uuid)
+      AND (${status} = 'all' OR p.status::text = ${status})
+      AND (
+        ${pattern}::text IS NULL
+        OR p.title ILIKE ${pattern} OR p.slug ILIKE ${pattern}
+        OR u.full_name ILIKE ${pattern} OR u.email::text ILIKE ${pattern}
+      )
+    ORDER BY (p.status = 'blocked') DESC, p.updated_at DESC
+    LIMIT 500
+  `
+}
+
+async function findPortfolio(id) {
+  const [row] = await portfoliosQuery({ id })
+  if (!row) throw new HttpError(404, 'Portafolio no encontrado', 'NOT_FOUND')
+  return row
+}
+
+async function listPortfolios(req, res) {
+  const { q, status } = listPortfoliosSchema.parse(req.query)
+  const pattern = q ? `%${q.replace(/[\\%_]/g, '\\$&')}%` : null
+  const rows = await portfoliosQuery({ pattern, status })
+  return sendJson(res, 200, { portfolios: rows.map(toAdminPortfolio) })
+}
+
+async function blockPortfolio(req, res, admin) {
+  const portfolio = await findPortfolio(idSchema.parse(req.query.id))
+  const { reason } = blockPortfolioSchema.parse(readBody(req))
+  if (portfolio.status === 'blocked') {
+    throw new HttpError(409, 'El portafolio ya está bloqueado', 'ALREADY_BLOCKED')
+  }
+
+  await sql.transaction([
+    sql`
+      UPDATE portfolios
+      SET status = 'blocked', blocked_reason = ${reason}, blocked_at = now(), blocked_by = ${admin.id}
+      WHERE id = ${portfolio.id}
+    `,
+    auditQuery(admin, 'BLOCK_PORTFOLIO', 'portfolio', portfolio.id, {
+      slug: portfolio.slug,
+      title: portfolio.title,
+      ownerEmail: portfolio.owner_email,
+      reason,
+    }),
+  ])
+  return sendJson(res, 200, { portfolio: toAdminPortfolio(await findPortfolio(portfolio.id)) })
+}
+
+async function unblockPortfolio(req, res, admin) {
+  const portfolio = await findPortfolio(idSchema.parse(req.query.id))
+  if (portfolio.status !== 'blocked') {
+    throw new HttpError(409, 'El portafolio no está bloqueado', 'NOT_BLOCKED')
+  }
+
+  await sql.transaction([
+    sql`
+      UPDATE portfolios
+      SET status = 'active', blocked_reason = NULL, blocked_at = NULL, blocked_by = NULL
+      WHERE id = ${portfolio.id}
+    `,
+    auditQuery(admin, 'UNBLOCK_PORTFOLIO', 'portfolio', portfolio.id, {
+      slug: portfolio.slug,
+      title: portfolio.title,
+      ownerEmail: portfolio.owner_email,
+      previousReason: portfolio.blocked_reason,
+    }),
+  ])
+  return sendJson(res, 200, { portfolio: toAdminPortfolio(await findPortfolio(portfolio.id)) })
+}
+
+async function deletePortfolio(req, res, admin) {
+  const portfolio = await findPortfolio(idSchema.parse(req.query.id))
+
+  // Claves del bucket antes de que la cascada borre las filas.
+  const keys = (await sql`SELECT storage_key FROM portfolio_storage_keys(${portfolio.id})`).map((r) => r.storage_key)
+
+  await sql.transaction([
+    sql`DELETE FROM portfolios WHERE id = ${portfolio.id}`,
+    auditQuery(admin, 'DELETE_PORTFOLIO', 'portfolio', portfolio.id, {
+      slug: portfolio.slug,
+      title: portfolio.title,
+      ownerEmail: portfolio.owner_email,
+      sections: portfolio.sections_count,
+      posts: portfolio.posts_count,
+      files: portfolio.files_count,
+    }),
+  ])
+
+  const failed = await deleteStorageObjects(keys)
+  if (failed.length > 0) {
+    console.error(`[admin] ${failed.length} archivo(s) huérfano(s) del portafolio ${portfolio.id}:`, failed)
+  }
+  return sendJson(res, 200, { ok: true, filesDeleted: keys.length - failed.length, filesFailed: failed.length })
+}
+
 // ---------- Enrutado -----------------------------------------------------
 
 const routes = {
@@ -178,6 +333,15 @@ const routes = {
       return createUser(req, res, admin)
     },
     PATCH: updateUser,
+  },
+  portfolios: {
+    GET: listPortfolios,
+    PATCH: (req, res, admin) => {
+      if (req.query.action === 'block') return blockPortfolio(req, res, admin)
+      if (req.query.action === 'unblock') return unblockPortfolio(req, res, admin)
+      throw new HttpError(404, 'Acción no encontrada', 'NOT_FOUND')
+    },
+    DELETE: deletePortfolio,
   },
 }
 
@@ -194,4 +358,5 @@ export default createHandler({
   GET: dispatch('GET'),
   POST: dispatch('POST'),
   PATCH: dispatch('PATCH'),
+  DELETE: dispatch('DELETE'),
 })

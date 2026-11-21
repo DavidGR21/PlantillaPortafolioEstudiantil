@@ -4,7 +4,7 @@ import './Admin.css'
 
 const LINKS = [
   { to: '/admin/usuarios', label: 'Usuarios' },
-  { to: '/admin/portafolios', label: 'Portafolios', soon: true },
+  { to: '/admin/portafolios', label: 'Portafolios' },
   { to: '/admin/bitacora', label: 'Bitácora', soon: true },
 ]
 

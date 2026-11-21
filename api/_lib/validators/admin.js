@@ -43,3 +43,18 @@ export const resetPasswordSchema = z.object({ password: passwordSchema })
 export const listUsersSchema = z.object({
   q: z.string().trim().max(100).optional(),
 })
+
+// ---------- Portafolios (moderación) ------------------------------------------
+
+export const listPortfoliosSchema = z.object({
+  q: z.string().trim().max(100).optional(),
+  status: z.enum(['all', 'active', 'blocked'], { error: 'Estado no válido' }).default('all'),
+})
+
+export const blockPortfolioSchema = z.object({
+  reason: z
+    .string({ error: 'Indica el motivo del bloqueo' })
+    .trim()
+    .min(3, { error: 'Indica el motivo del bloqueo (mínimo 3 caracteres)' })
+    .max(500, { error: 'El motivo no puede superar 500 caracteres' }),
+})

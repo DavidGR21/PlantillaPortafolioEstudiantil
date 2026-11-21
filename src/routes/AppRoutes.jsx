@@ -9,6 +9,7 @@ import DashboardPage from '../pages/dashboard/DashboardPage.jsx'
 import EditorPage from '../pages/editor/EditorPage.jsx'
 import AdminLayout from '../pages/admin/AdminLayout.jsx'
 import AdminUsersPage from '../pages/admin/AdminUsersPage.jsx'
+import AdminPortfoliosPage from '../pages/admin/AdminPortfoliosPage.jsx'
 
 export function AppRoutes() {
   return (
@@ -30,6 +31,7 @@ export function AppRoutes() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="usuarios" replace />} />
             <Route path="usuarios" element={<AdminUsersPage />} />
+            <Route path="portafolios" element={<AdminPortfoliosPage />} />
           </Route>
         </Route>
       </Route>

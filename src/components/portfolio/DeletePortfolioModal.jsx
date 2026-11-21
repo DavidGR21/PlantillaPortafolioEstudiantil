@@ -1,11 +1,15 @@
 import { useState } from 'react'
-import { Modal } from '../../components/ui/Modal.jsx'
-import { Spinner } from '../../components/ui/Spinner.jsx'
+import { Modal } from '../ui/Modal.jsx'
+import { Spinner } from '../ui/Spinner.jsx'
 import { deletePortfolio } from '../../services/portfolioService.js'
-import { pluralize } from '../../utils/format.js'
+import { formatBytes, pluralize } from '../../utils/format.js'
 
-/** Confirmación fuerte: hay que escribir la dirección del portafolio para eliminarlo. */
-export function DeletePortfolioModal({ portfolio, onClose, onDeleted }) {
+/**
+ * Confirmación fuerte: hay que escribir la dirección del portafolio para eliminarlo.
+ * - onDelete(id): función que borra (por defecto, la del dueño; el admin pasa la suya).
+ * - ownerName: si se indica, se muestra de quién es (vista de administración).
+ */
+export function DeletePortfolioModal({ portfolio, ownerName, onDelete = deletePortfolio, onClose, onDeleted }) {
   const [confirmation, setConfirmation] = useState('')
   const [error, setError] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
@@ -18,7 +22,7 @@ export function DeletePortfolioModal({ portfolio, onClose, onDeleted }) {
     setError('')
     setIsDeleting(true)
     try {
-      await deletePortfolio(portfolio.id)
+      await onDelete(portfolio.id)
       onDeleted(portfolio)
     } catch (err) {
       setError(err.message)
@@ -26,14 +30,19 @@ export function DeletePortfolioModal({ portfolio, onClose, onDeleted }) {
     }
   }
 
+  const files = portfolio.filesCount !== undefined
+    ? ` y ${pluralize(portfolio.filesCount, 'archivo', 'archivos')} (${formatBytes(portfolio.filesSize ?? 0)})`
+    : ' y todos sus archivos'
+
   return (
     <Modal title="Eliminar portafolio" onClose={onClose} dismissible={!isDeleting} size="sm">
       <form className="modal__form" onSubmit={handleSubmit} noValidate>
         <p className="alert alert--error">
-          Se eliminará <strong>{portfolio.title}</strong> con{' '}
+          Se eliminará <strong>{portfolio.title}</strong>
+          {ownerName && <> de <strong>{ownerName}</strong></>} con{' '}
           {pluralize(portfolio.sectionsCount ?? 0, 'apartado', 'apartados')},{' '}
-          {pluralize(portfolio.postsCount ?? 0, 'publicación', 'publicaciones')} y todos sus
-          archivos. <strong>Esta acción no se puede deshacer.</strong>
+          {pluralize(portfolio.postsCount ?? 0, 'publicación', 'publicaciones')}
+          {files}. <strong>Esta acción no se puede deshacer.</strong>
         </p>
 
         <div className="field">

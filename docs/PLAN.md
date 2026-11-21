@@ -208,7 +208,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Crear usuario (email, nombre, contraseña temporal, rol), listar, activar/desactivar, cambiar `max_portfolios`, restablecer contraseña. Registrar en `admin_actions`.
 - `feat(admin): gestión de usuarios`
 
-**Paso 16 – Moderación de portafolios (admin)**
+**Paso 16 – Moderación de portafolios (admin)** ✅
 - Listar todos (filtro por estado/dueño), ver contenido aunque esté bloqueado, bloquear con motivo, desbloquear, eliminar (limpiando el bucket).
 - `feat(admin): bloquear, desbloquear y eliminar portafolios`
 

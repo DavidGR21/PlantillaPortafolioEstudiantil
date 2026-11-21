@@ -4,7 +4,7 @@ import { Spinner } from '../../components/ui/Spinner.jsx'
 import { useAuth } from '../../hooks/useAuth.js'
 import { useMyPortfolios } from '../../hooks/useMyPortfolios.js'
 import { CreatePortfolioModal } from './CreatePortfolioModal.jsx'
-import { DeletePortfolioModal } from './DeletePortfolioModal.jsx'
+import { DeletePortfolioModal } from '../../components/portfolio/DeletePortfolioModal.jsx'
 import { PortfolioCard } from './PortfolioCard.jsx'
 import './DashboardPage.css'
 

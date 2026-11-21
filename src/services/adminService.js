@@ -26,6 +26,37 @@ export async function updateUser(id, changes) {
   return user
 }
 
+// ---------- Portafolios (moderación) ------------------------------------------
+
+/** filters: { q?, status?: 'all' | 'active' | 'blocked' } */
+export async function listPortfolios({ q = '', status = 'all' } = {}, signal) {
+  const params = new URLSearchParams({ resource: 'portfolios', status })
+  if (q.trim()) params.set('q', q.trim())
+  const { portfolios } = await apiRequest(`admin?${params}`, { signal })
+  return portfolios
+}
+
+export async function blockPortfolio(id, reason) {
+  const { portfolio } = await apiRequest(`admin?resource=portfolios&id=${enc(id)}&action=block`, {
+    method: 'PATCH',
+    body: { reason },
+  })
+  return portfolio
+}
+
+export async function unblockPortfolio(id) {
+  const { portfolio } = await apiRequest(`admin?resource=portfolios&id=${enc(id)}&action=unblock`, {
+    method: 'PATCH',
+    body: {}, // la API exige JSON en los PATCH (protección CSRF)
+  })
+  return portfolio
+}
+
+/** { ok, filesDeleted, filesFailed } */
+export function deletePortfolioAsAdmin(id) {
+  return apiRequest(`admin?resource=portfolios&id=${enc(id)}`, { method: 'DELETE' })
+}
+
 export function resetUserPassword(id, password) {
   return apiRequest(`admin?resource=users&id=${enc(id)}&action=reset-password`, {
     method: 'POST',
