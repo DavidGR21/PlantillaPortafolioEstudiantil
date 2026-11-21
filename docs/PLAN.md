@@ -164,7 +164,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Listar los míos, crear (validar slug único y límite → error claro con `PORTFOLIO_LIMIT_REACHED`), editar datos generales, eliminar (borrar primero archivos del bucket con `portfolio_storage_keys`).
 - `feat(api): CRUD de portafolios con límite por usuario`
 
-**Paso 7 – Dashboard "Mis portafolios"**
+**Paso 7 – Dashboard "Mis portafolios"** ✅
 - Lista, contador "2 de 3", crear, eliminar con confirmación, enlace público y botón editar.
 - `feat(web): dashboard de portafolios del estudiante`
 

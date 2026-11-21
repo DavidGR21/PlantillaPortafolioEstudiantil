@@ -1,0 +1,154 @@
+.dashboard__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard__title {
+  margin: 0;
+}
+
+.dashboard__header .text-muted {
+  margin: 0.25rem 0 0;
+}
+
+.dashboard__create {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dashboard__counter {
+  padding: 0.25rem 0.65rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+}
+
+.dashboard__notice,
+.dashboard__error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard__loading {
+  display: grid;
+  place-items: center;
+  padding: 4rem 0;
+}
+
+.dashboard__limit-note {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: 1.25rem;
+}
+
+/* ---------- Tarjeta ------------------------------------------------------ */
+.portfolio-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.portfolio-card--blocked {
+  border-color: var(--color-danger-soft);
+}
+
+.portfolio-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.portfolio-card__title {
+  margin: 0;
+  font-size: 1.15rem;
+  overflow-wrap: anywhere;
+}
+
+.portfolio-card__subtitle {
+  margin: -0.4rem 0 0;
+  color: var(--color-text-muted);
+}
+
+.portfolio-card__blocked {
+  font-size: 0.85rem;
+}
+
+.portfolio-card__link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.4rem 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+}
+
+.portfolio-card__link a {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portfolio-card__meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.portfolio-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.portfolio-card__delete {
+  margin-left: auto;
+  color: var(--color-danger);
+}
+
+/* ---------- Estado vacío ------------------------------------------------- */
+.empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.empty-state h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.empty-state p {
+  margin: 0 0 0.75rem;
+  max-width: 30rem;
+}

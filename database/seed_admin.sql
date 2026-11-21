@@ -9,6 +9,6 @@ VALUES (
   'Administrador',
   crypt('CambiaEstaContraseña123!', gen_salt('bf', 10)),
   'admin',
-  0          -- el admin no necesita portafolios propios (ajústalo si quieres)
+  3          -- portafolios propios permitidos (0 = el admin solo administra)
 )
 ON CONFLICT (email) DO NOTHING;

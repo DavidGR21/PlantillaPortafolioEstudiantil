@@ -9,7 +9,10 @@
   --color-primary-hover: #1d4ed8;
   --color-primary-soft: #dbeafe;
   --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
   --color-danger-soft: #fee2e2;
+  --color-success: #15803d;
+  --color-success-soft: #dcfce7;
 
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -109,8 +112,43 @@ a {
   background: var(--color-bg);
 }
 
+.btn--danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: var(--color-danger-hover);
+}
+
+.btn--sm {
+  min-height: 2rem;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.875rem;
+}
+
 .btn--block {
   width: 100%;
+}
+
+/* ---------- Insignias --------------------------------------------------- */
+.badge {
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.badge--success {
+  color: var(--color-success);
+  background: var(--color-success-soft);
+}
+
+.badge--danger {
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
 }
 
 /* ---------- Formularios ------------------------------------------------- */
@@ -139,6 +177,55 @@ a {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.field code {
+  padding: 0.05rem 0.35rem;
+  font-size: 0.85em;
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+}
+
+.field__hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.field__hint--available { color: var(--color-success); }
+.field__hint--invalid,
+.field__hint--taken,
+.field__hint--error { color: var(--color-danger); }
+
+/* Campo con prefijo, p. ej. "/p/" + slug */
+.field__prefixed {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.field__prefixed:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.field__prefix {
+  display: flex;
+  align-items: center;
+  padding: 0 0.6rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border-right: 1px solid var(--color-border);
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.field__prefixed input,
+.field__prefixed input:focus {
+  border: none;
+  box-shadow: none;
 }
 
 .field__with-action {
@@ -175,4 +262,19 @@ a {
 .alert--error {
   color: var(--color-danger);
   background: var(--color-danger-soft);
+}
+
+.alert--success {
+  color: var(--color-success);
+  background: var(--color-success-soft);
+}
+
+.alert__close {
+  padding: 0 0.25rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
