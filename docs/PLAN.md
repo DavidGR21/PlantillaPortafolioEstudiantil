@@ -199,7 +199,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Eliminar archivo = borrar del bucket + borrar fila.
 - `feat: subida y eliminación de archivos en publicaciones`
 
-**Paso 14 – Visor de archivos**
+**Paso 14 – Visor de archivos** ✅
 - Imágenes en galería/lightbox; PDF embebido (`<iframe>`/`<object>`) con opción de descargar/abrir.
 - `feat(web): visor de PDF e imágenes`
 

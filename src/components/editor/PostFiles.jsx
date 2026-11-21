@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { ConfirmDialog } from '../ui/ConfirmDialog.jsx'
+import { FileViewer } from '../portfolio/FileViewer.jsx'
 import * as fileService from '../../services/fileService.js'
 import { formatBytes } from '../../utils/format.js'
 import { ACCEPT_ATTRIBUTE, MAX_FILES_PER_POST, validateFile } from '../../utils/files.js'
@@ -16,6 +17,7 @@ export function PostFiles({ post, onChanged }) {
   const [isUploading, setIsUploading] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [toDelete, setToDelete] = useState(null)
+  const [viewerIndex, setViewerIndex] = useState(null)
   const [error, setError] = useState('')
   const abortRef = useRef(null)
 
@@ -99,16 +101,23 @@ export function PostFiles({ post, onChanged }) {
 
   const images = post.files.filter((f) => f.kind === 'image')
   const pdfs = post.files.filter((f) => f.kind === 'pdf')
+  const viewerFiles = [...images, ...pdfs]
 
   return (
     <div className="post-files">
       {images.length > 0 && (
         <ul className="post-files__images">
-          {images.map((file) => (
+          {images.map((file, i) => (
             <li key={file.id} className="post-files__thumb">
-              <a href={file.url} target="_blank" rel="noreferrer" title={file.name}>
+              <button
+                type="button"
+                className="post-files__preview"
+                onClick={() => setViewerIndex(i)}
+                title={file.name}
+                aria-label={`Ver ${file.name}`}
+              >
                 <img src={file.url} alt={file.name} loading="lazy" />
-              </a>
+              </button>
               <button
                 type="button"
                 className="post-files__remove"
@@ -125,14 +134,19 @@ export function PostFiles({ post, onChanged }) {
 
       {pdfs.length > 0 && (
         <ul className="post-files__docs">
-          {pdfs.map((file) => (
+          {pdfs.map((file, i) => (
             <li key={file.id} className="post-files__doc">
               <span className="post-files__badge" aria-hidden="true">
                 PDF
               </span>
-              <a href={file.url} target="_blank" rel="noreferrer" className="post-files__name">
+              <button
+                type="button"
+                className="post-files__name"
+                onClick={() => setViewerIndex(images.length + i)}
+                title={`Ver ${file.name}`}
+              >
                 {file.name}
-              </a>
+              </button>
               <span className="post-files__size">{formatBytes(file.size)}</span>
               <button
                 type="button"
@@ -218,6 +232,15 @@ export function PostFiles({ post, onChanged }) {
         </label>
       ) : (
         <p className="field__hint">Esta publicación alcanzó el máximo de {MAX_FILES_PER_POST} archivos.</p>
+      )}
+
+      {viewerIndex !== null && viewerIndex < viewerFiles.length && (
+        <FileViewer
+          files={viewerFiles}
+          index={viewerIndex}
+          onIndexChange={setViewerIndex}
+          onClose={() => setViewerIndex(null)}
+        />
       )}
 
       {toDelete && (

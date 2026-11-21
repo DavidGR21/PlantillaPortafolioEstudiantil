@@ -234,12 +234,26 @@
   gap: 0.5rem;
 }
 
-.pf-files__images img {
+.pf-files__thumb {
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: zoom-in;
+}
+
+.pf-files__thumb img {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  transition: transform 0.2s;
+}
+
+.pf-files__thumb:hover img {
+  transform: scale(1.04);
 }
 
 .pf-files__docs {
@@ -249,11 +263,7 @@
 
 .pf-file {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 0.75rem;
-  color: var(--color-text);
-  text-decoration: none;
+  align-items: stretch;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -261,6 +271,35 @@
 
 .pf-file:hover {
   border-color: var(--color-primary);
+}
+
+.pf-file__open {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  text-align: left;
+  color: var(--color-text);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.pf-file__download {
+  display: grid;
+  place-items: center;
+  padding: 0 0.9rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border-left: 1px solid var(--color-border);
+}
+
+.pf-file__download:hover {
+  color: var(--color-primary);
 }
 
 .pf-file__icon {

@@ -498,3 +498,28 @@
   height: 0.35rem;
   accent-color: var(--color-primary);
 }
+
+/* Miniaturas y nombres que abren el visor */
+.post-files__preview {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: zoom-in;
+}
+
+button.post-files__name {
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+button.post-files__name:hover {
+  text-decoration: underline;
+}
