@@ -334,7 +334,8 @@ const routes = {
 function dispatch(method) {
   return async (req, res) => {
     const user = await requireUser(req)
-    const fn = routes[req.query.type]?.[method]
+    const group = Object.hasOwn(routes, req.query.type ?? '') ? routes[req.query.type] : null
+    const fn = group && Object.hasOwn(group, method) ? group[method] : null
     if (!fn) throw new HttpError(404, 'Ruta no encontrada', 'NOT_FOUND')
     return fn(req, res, user)
   }

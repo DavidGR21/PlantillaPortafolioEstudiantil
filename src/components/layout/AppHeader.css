@@ -49,3 +49,9 @@
   color: var(--color-primary);
   font-weight: 600;
 }
+
+@media (max-width: 640px) {
+  .app-header__btn-label {
+    display: none;
+  }
+}

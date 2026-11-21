@@ -221,12 +221,14 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Tema visual, responsive, `theme` (jsonb) para colores por portafolio, estados de carga y vacíos.
 - `style: diseño responsive de la plantilla`
 
-**Paso 19 – Seguridad y robustez**
+**Paso 19 – Seguridad y robustez** ✅
 - Rate limit básico en login, mensajes de error genéricos, cabeceras de seguridad en `vercel.json`, revisar que **todas** las rutas de escritura validen propiedad, cambio de contraseña del propio usuario.
 - `fix: endurecer seguridad de la API`
 
 **Paso 20 – Despliegue en Vercel**
 - Importar repo, variables de entorno, probar flujo completo en producción, README con instrucciones.
+- Restringir el CORS del bucket al dominio final: `npm run bucket:cors -- https://<dominio> --aplicar`.
+- Comprobar en producción la CSP de `vercel.json` (imágenes, visor PDF y subidas al bucket).
 - `docs: guía de despliegue`
 
 ---
@@ -253,3 +255,6 @@ Borrado en cascada: eliminar un portafolio elimina sus apartados, parciales, pub
 2. Pega y ejecuta `database/schema.sql`.
 3. Edita correo/contraseña en `database/seed_admin.sql` y ejecútalo.
 4. Inicia sesión con ese admin y cambia la contraseña.
+
+**Bases creadas antes del paso 19:** ejecuta también `database/migrations/001_seguridad.sql`
+(agrega `login_attempts` y `users.password_changed_at`; es idempotente). `schema.sql` ya lo incluye.

@@ -62,6 +62,7 @@ export function createHandler(methods) {
       return await fn(req, res)
     } catch (error) {
       if (error instanceof HttpError) {
+        if (error.retryAfter) res.setHeader('Retry-After', String(error.retryAfter))
         return sendJson(res, error.status, { error: error.message, code: error.code })
       }
       if (error instanceof ZodError) {

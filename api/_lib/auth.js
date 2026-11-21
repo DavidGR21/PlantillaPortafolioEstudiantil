@@ -79,6 +79,7 @@ function readToken(req) {
  * Devuelve el usuario de la sesión o null.
  * Se consulta la BD en cada petición para que desactivar a un usuario
  * (o cambiar su rol) tenga efecto inmediato, aunque su JWT siga vigente.
+ * Una sesión iniciada ANTES del último cambio de contraseña ya no es válida.
  */
 export async function getSessionUser(req) {
   const token = readToken(req)
@@ -92,11 +93,14 @@ export async function getSessionUser(req) {
   }
 
   const [row] = await sql`
-    SELECT id, email, full_name, role, max_portfolios, is_active
+    SELECT id, email, full_name, role, max_portfolios, is_active, password_changed_at
     FROM users
     WHERE id = ${payload.sub}
   `
   if (!row || !row.is_active) return null
+  if (row.password_changed_at && payload.iat < Math.floor(new Date(row.password_changed_at).getTime() / 1000)) {
+    return null
+  }
   return toPublicUser(row)
 }
 

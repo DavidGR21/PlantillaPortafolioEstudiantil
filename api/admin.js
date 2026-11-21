@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
 import { sql } from './_lib/db.js'
-import { requireAdmin } from './_lib/auth.js'
+import { createSessionToken, requireAdmin, setSessionCookie } from './_lib/auth.js'
 import { auditQuery } from './_lib/audit.js'
 import { createHandler, HttpError, readBody, sendJson } from './_lib/http.js'
 import { deleteStorageObjects } from './_lib/storage.js'
@@ -171,12 +171,17 @@ async function resetPassword(req, res, admin) {
   const user = await findUser(idSchema.parse(req.query.id))
   const { password } = resetPasswordSchema.parse(readBody(req))
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS)
+  // Cierra las sesiones abiertas de ese usuario (hora del servidor, redondeada al segundo como el JWT).
+  const changedAt = new Date(Math.floor(Date.now() / 1000) * 1000)
 
   await sql.transaction([
-    sql`UPDATE users SET password_hash = ${passwordHash} WHERE id = ${user.id}`,
+    sql`UPDATE users SET password_hash = ${passwordHash}, password_changed_at = ${changedAt} WHERE id = ${user.id}`,
     // Nunca se guarda la contraseña en la bitácora.
     auditQuery(admin, 'RESET_PASSWORD', 'user', user.id, { email: user.email }),
   ])
+
+  // Si el admin restablece su PROPIA contraseña, renueva su cookie para no cerrar su sesión.
+  if (user.id === admin.id) setSessionCookie(res, createSessionToken(admin))
   return sendJson(res, 200, { ok: true })
 }
 
@@ -396,7 +401,8 @@ const routes = {
 function dispatch(method) {
   return async (req, res) => {
     const admin = await requireAdmin(req)
-    const fn = routes[req.query.resource]?.[method]
+    const group = Object.hasOwn(routes, req.query.resource ?? '') ? routes[req.query.resource] : null
+    const fn = group && Object.hasOwn(group, method) ? group[method] : null
     if (!fn) throw new HttpError(404, 'Ruta no encontrada', 'NOT_FOUND')
     return fn(req, res, admin)
   }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
+import { ChangePasswordModal } from './ChangePasswordModal.jsx'
 import './AppHeader.css'
 
 const navClass = ({ isActive }) => `app-header__link${isActive ? ' app-header__link--active' : ''}`
@@ -10,6 +11,7 @@ export function AppHeader() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [isLeaving, setIsLeaving] = useState(false)
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
 
   async function handleLogout() {
     setIsLeaving(true)
@@ -41,10 +43,21 @@ export function AppHeader() {
         <span className="app-header__name" title={user?.email}>
           {user?.fullName}
         </span>
-        <button type="button" className="btn btn--ghost" onClick={handleLogout} disabled={isLeaving}>
+        <button
+          type="button"
+          className="btn btn--ghost btn--sm"
+          onClick={() => setIsChangingPassword(true)}
+          title="Cambiar mi contraseña"
+        >
+          <span aria-hidden="true">🔑</span>
+          <span className="app-header__btn-label">Contraseña</span>
+        </button>
+        <button type="button" className="btn btn--ghost btn--sm" onClick={handleLogout} disabled={isLeaving}>
           {isLeaving ? 'Saliendo…' : 'Cerrar sesión'}
         </button>
       </div>
+
+      {isChangingPassword && <ChangePasswordModal onClose={() => setIsChangingPassword(false)} />}
     </header>
   )
 }

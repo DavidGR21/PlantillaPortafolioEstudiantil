@@ -11,8 +11,8 @@
 -- =====================================================================
 
 -- ---------- RESET (solo desarrollo, ¡borra todo!) ---------------------
--- DROP TABLE IF EXISTS admin_actions, post_files, posts, subsections,
---                      sections, portfolios, users CASCADE;
+-- DROP TABLE IF EXISTS admin_actions, login_attempts, post_files, posts,
+--                      subsections, sections, portfolios, users CASCADE;
 -- DROP TYPE  IF EXISTS user_role, portfolio_status, file_kind CASCADE;
 -- DROP VIEW  IF EXISTS public_portfolios;
 
@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS users (
   max_portfolios  smallint    NOT NULL DEFAULT 3 CHECK (max_portfolios BETWEEN 0 AND 20),
   created_by      uuid        REFERENCES users(id) ON DELETE SET NULL,
   last_login_at   timestamptz,
+  password_changed_at timestamptz,                   -- invalida sesiones anteriores a esta fecha
   created_at      timestamptz NOT NULL DEFAULT now(),
   updated_at      timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT users_email_format CHECK (email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$')
@@ -62,6 +63,21 @@ CREATE TABLE IF NOT EXISTS users (
 DROP TRIGGER IF EXISTS trg_users_updated_at ON users;
 CREATE TRIGGER trg_users_updated_at
   BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- =====================================================================
+--  LOGIN_ATTEMPTS  (límite de intentos de inicio de sesión)
+-- =====================================================================
+CREATE TABLE IF NOT EXISTS login_attempts (
+  id          bigserial PRIMARY KEY,
+  email       citext      NOT NULL,
+  ip          text        NOT NULL,
+  success     boolean     NOT NULL,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_login_attempts_email ON login_attempts (email, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_login_attempts_ip    ON login_attempts (ip, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_login_attempts_old   ON login_attempts (created_at);
 
 -- =====================================================================
 --  PORTFOLIOS  (URL pública: /p/:slug)
