@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AppHeader } from '../../components/layout/AppHeader.jsx'
 import { SectionsManager } from '../../components/editor/SectionsManager.jsx'
+import { SubsectionsManager } from '../../components/editor/SubsectionsManager.jsx'
 import { FullPageLoader } from '../../components/ui/Spinner.jsx'
 import { StatusMessage } from '../../components/ui/StatusMessage.jsx'
 import { usePublicPortfolio } from '../../hooks/usePublicPortfolio.js'
@@ -13,6 +14,7 @@ export default function EditorPage() {
   const { slug } = useParams()
   const { data, error, isLoading, reload } = usePublicPortfolio(slug)
   const [selectedId, setSelectedId] = useState(null)
+  const [selectedSubId, setSelectedSubId] = useState(null)
 
   if (isLoading) return <FullPageLoader label="Cargando editor…" />
 
@@ -39,8 +41,10 @@ export default function EditorPage() {
     )
   }
 
-  // Si el apartado seleccionado ya no existe (p. ej. se eliminó), se usa el primero.
+  // Si lo seleccionado ya no existe (p. ej. se eliminó o se cambió de apartado), se usa el primero.
   const selected = sections.find((s) => s.id === selectedId) ?? sections[0] ?? null
+  const selectedSub =
+    selected?.subsections.find((s) => s.id === selectedSubId) ?? selected?.subsections[0] ?? null
 
   return (
     <>
@@ -90,18 +94,39 @@ export default function EditorPage() {
                     /p/{portfolio.slug}/{selected.slug}
                   </a>
                 </header>
-                <p className="text-muted">
-                  {pluralize(selected.subsections.length, 'parcial', 'parciales')} ·{' '}
-                  {pluralize(
-                    selected.subsections.reduce((total, sub) => total + sub.posts.length, 0),
-                    'publicación',
-                    'publicaciones',
-                  )}
-                </p>
-                <div className="editor__placeholder">
-                  Próximamente: aquí podrás crear los parciales (Parcial 1, Parcial 2…) y sus
-                  publicaciones.
-                </div>
+                <SubsectionsManager
+                  section={selected}
+                  selectedId={selectedSub?.id}
+                  onSelect={setSelectedSubId}
+                  onChanged={reload}
+                />
+
+                {selectedSub && (
+                  <div className="editor__posts">
+                    <header className="editor-panel__header">
+                      <h3 className="editor-panel__title">Publicaciones de {selectedSub.title}</h3>
+                      <span className="text-muted editor-panel__count">
+                        {pluralize(selectedSub.posts.length, 'publicación', 'publicaciones')}
+                      </span>
+                    </header>
+                    {selectedSub.posts.length > 0 && (
+                      <ul className="editor__post-list">
+                        {selectedSub.posts.map((post) => (
+                          <li key={post.id}>
+                            <strong>{post.title}</strong>
+                            <span className="text-muted">
+                              {' '}
+                              · {pluralize(post.files.length, 'archivo', 'archivos')}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <div className="editor__placeholder">
+                      Próximamente: aquí podrás crear y editar publicaciones con sus PDF e imágenes.
+                    </div>
+                  </div>
+                )}
               </>
             ) : (
               <div className="editor__placeholder">

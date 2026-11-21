@@ -179,7 +179,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Reservar el slug de apartado `editar` (choca con la ruta `/p/:slug/editar`).
 - `feat: gestión de apartados del menú`
 
-**Paso 10 – Submódulos (parciales)**
+**Paso 10 – Submódulos (parciales)** ✅
 - Crear "Parcial 1", "Parcial 2"..., renombrar, eliminar, reordenar.
 - `feat: gestión de submódulos/parciales`
 

@@ -96,12 +96,12 @@
   margin: 0;
 }
 
-/* ---------- Apartados ------------------------------------------------------ */
-.sections-manager__empty {
+/* ---------- Listas editables (apartados y parciales) ------------------------------------------------------ */
+.editable-list__empty {
   font-size: 0.9rem;
 }
 
-.sections-manager__list {
+.editable-list__items {
   display: grid;
   gap: 0.35rem;
   margin: 0;
@@ -109,7 +109,7 @@
   list-style: none;
 }
 
-.section-row {
+.list-row {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -118,17 +118,17 @@
   border-radius: var(--radius-md);
 }
 
-.section-row:hover {
+.list-row:hover {
   background: var(--color-bg);
 }
 
-.section-row--selected,
-.section-row--selected:hover {
+.list-row--selected,
+.list-row--selected:hover {
   background: var(--color-primary-soft);
   border-color: var(--color-primary);
 }
 
-.section-row__select {
+.list-row__select {
   display: flex;
   flex: 1;
   align-items: center;
@@ -143,7 +143,7 @@
   cursor: pointer;
 }
 
-.section-row__index {
+.list-row__index {
   display: grid;
   place-items: center;
   width: 1.5rem;
@@ -157,19 +157,19 @@
   border-radius: 50%;
 }
 
-.section-row__name {
+.list-row__name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 600;
 }
 
-.section-row__actions {
+.list-row__actions {
   display: flex;
   flex-shrink: 0;
 }
 
-.section-row__rename {
+.list-row__rename {
   display: flex;
   flex: 1;
   flex-wrap: wrap;
@@ -177,8 +177,8 @@
   padding: 0.25rem;
 }
 
-.section-row__rename input,
-.sections-manager__add input {
+.list-row__rename input,
+.editable-list__add input {
   flex: 1;
   min-width: 8rem;
   min-height: 2rem;
@@ -190,14 +190,14 @@
   border-radius: var(--radius-md);
 }
 
-.section-row__rename input:focus,
-.sections-manager__add input:focus {
+.list-row__rename input:focus,
+.editable-list__add input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
-.sections-manager__add {
+.editable-list__add {
   display: flex;
   gap: 0.5rem;
   padding-top: 1rem;
@@ -235,4 +235,32 @@
 /* ---------- Diálogo de confirmación ---------------------------------------- */
 .confirm-dialog__body p {
   margin: 0;
+}
+
+/* ---------- Panel de detalle: parciales y publicaciones -------------------- */
+.editable-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.subsections-manager {
+  padding: 1rem;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+}
+
+.subsections-manager .list-row:hover {
+  background: var(--color-surface);
+}
+
+.editor__posts {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.editor__post-list {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding-left: 1.25rem;
 }

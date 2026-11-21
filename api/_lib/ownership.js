@@ -31,3 +31,21 @@ export async function getOwnedSection(user, sectionId) {
   }
   return section
 }
+
+/**
+ * Devuelve el parcial (con section_id) si su portafolio pertenece al usuario.
+ */
+export async function getOwnedSubsection(user, subsectionId) {
+  const [subsection] = await sql`
+    SELECT ss.*, p.owner_id
+    FROM subsections ss
+    JOIN sections s ON s.id = ss.section_id
+    JOIN portfolios p ON p.id = s.portfolio_id
+    WHERE ss.id = ${subsectionId}
+  `
+  if (!subsection) throw new HttpError(404, 'Parcial no encontrado', 'NOT_FOUND')
+  if (subsection.owner_id !== user.id) {
+    throw new HttpError(403, 'Este parcial no es tuyo', 'NOT_OWNER')
+  }
+  return subsection
+}

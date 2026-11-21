@@ -1,33 +1,41 @@
 import { sql } from './_lib/db.js'
 import { requireUser } from './_lib/auth.js'
 import { createHandler, HttpError, readBody, sendJson } from './_lib/http.js'
-import { getOwnedPortfolio, getOwnedSection } from './_lib/ownership.js'
+import { getOwnedPortfolio, getOwnedSection, getOwnedSubsection } from './_lib/ownership.js'
 import { slugify, uniqueSlug } from './_lib/slug.js'
 import { deleteStorageObjects } from './_lib/storage.js'
 import {
   createSectionSchema,
+  createSubsectionSchema,
   idSchema,
   MAX_SECTIONS_PER_PORTFOLIO,
+  MAX_SUBSECTIONS_PER_SECTION,
   RESERVED_SECTION_SLUGS,
-  reorderSchema,
+  reorderSectionsSchema,
+  reorderSubsectionsSchema,
   updateSectionSchema,
+  updateSubsectionSchema,
 } from './_lib/validators/content.js'
 
 /*
  * Contenido de los portafolios (solo el dueño). El tipo va en ?type=
  *
  * Apartados (type=section):
- *   POST   /api/content?type=section                   { portfolioId, title }  -> 201 { section }
- *   PATCH  /api/content?type=section&id=<uuid>         { title }               -> { section }
- *   PATCH  /api/content?type=section&action=reorder    { portfolioId, ids[] }  -> { ok }
- *   DELETE /api/content?type=section&id=<uuid>                                 -> { ok, filesDeleted, filesFailed }
+ *   POST   ?type=section                    { portfolioId, title } -> 201 { section }
+ *   PATCH  ?type=section&id=<uuid>          { title }              -> { section }
+ *   PATCH  ?type=section&action=reorder     { portfolioId, ids[] } -> { ok }
+ *   DELETE ?type=section&id=<uuid>                                 -> { ok, filesDeleted, filesFailed }
  *
- * (Parciales y publicaciones se agregan en los pasos 10 y 11.)
+ * Parciales / submódulos (type=subsection):
+ *   POST   ?type=subsection                 { sectionId, title }   -> 201 { subsection }
+ *   PATCH  ?type=subsection&id=<uuid>       { title }              -> { subsection }
+ *   PATCH  ?type=subsection&action=reorder  { sectionId, ids[] }   -> { ok }
+ *   DELETE ?type=subsection&id=<uuid>                              -> { ok, filesDeleted, filesFailed }
+ *
+ * (Las publicaciones se agregan en el paso 11.)
  */
 
-function toSection(row) {
-  return { id: row.id, title: row.title, slug: row.slug, position: row.position }
-}
+// ---------- Utilidades -----------------------------------------------------
 
 /** Borra archivos del bucket y registra los que no se pudieron borrar. */
 async function cleanupFiles(keys, context) {
@@ -36,6 +44,20 @@ async function cleanupFiles(keys, context) {
     console.error(`[content] ${failed.length} archivo(s) huérfano(s) (${context}):`, failed)
   }
   return { filesDeleted: keys.length - failed.length, filesFailed: failed.length }
+}
+
+/** La lista recibida debe contener exactamente los elementos actuales (ni más ni menos). */
+function assertSameItems(currentRows, ids, label) {
+  const current = new Set(currentRows.map((r) => r.id))
+  if (current.size !== ids.length || !ids.every((id) => current.has(id))) {
+    throw new HttpError(409, `La lista de ${label} cambió. Recarga la página.`, 'STALE_ORDER')
+  }
+}
+
+// ---------- Apartados ----------------------------------------------------
+
+function toSection(row) {
+  return { id: row.id, title: row.title, slug: row.slug, position: row.position }
 }
 
 /** Slug único del apartado dentro del portafolio (excluyendo el propio al renombrar). */
@@ -49,8 +71,6 @@ async function freeSectionSlug(portfolioId, title, excludeId = null) {
 }
 
 const isSlugConflict = (error) => error.code === '23505' && error.constraint === 'sections_unique_slug'
-
-// ---------- Apartados ----------------------------------------------------
 
 async function createSection(req, res, user) {
   const { portfolioId, title } = createSectionSchema.parse(readBody(req))
@@ -102,15 +122,9 @@ async function updateSection(req, res, user) {
 }
 
 async function reorderSections(req, res, user) {
-  const { portfolioId, ids } = reorderSchema.parse(readBody(req))
+  const { portfolioId, ids } = reorderSectionsSchema.parse(readBody(req))
   await getOwnedPortfolio(user, portfolioId)
-
-  // La lista debe contener exactamente los apartados del portafolio.
-  const rows = await sql`SELECT id FROM sections WHERE portfolio_id = ${portfolioId}`
-  const current = new Set(rows.map((r) => r.id))
-  if (current.size !== ids.length || !ids.every((id) => current.has(id))) {
-    throw new HttpError(409, 'La lista de apartados cambió. Recarga la página.', 'STALE_ORDER')
-  }
+  assertSameItems(await sql`SELECT id FROM sections WHERE portfolio_id = ${portfolioId}`, ids, 'apartados')
 
   // Una sola sentencia (atómica): posición = índice en la lista.
   await sql`
@@ -140,14 +154,91 @@ async function deleteSection(req, res, user) {
   return sendJson(res, 200, { ok: true, ...result })
 }
 
+// ---------- Parciales (submódulos) ------------------------------------------
+
+function toSubsection(row) {
+  return { id: row.id, title: row.title, position: row.position }
+}
+
+async function createSubsection(req, res, user) {
+  const { sectionId, title } = createSubsectionSchema.parse(readBody(req))
+  await getOwnedSection(user, sectionId)
+
+  const [{ count }] = await sql`SELECT count(*)::int AS count FROM subsections WHERE section_id = ${sectionId}`
+  if (count >= MAX_SUBSECTIONS_PER_SECTION) {
+    throw new HttpError(409, `Máximo ${MAX_SUBSECTIONS_PER_SECTION} parciales por apartado.`, 'SUBSECTION_LIMIT_REACHED')
+  }
+
+  const [row] = await sql`
+    INSERT INTO subsections (section_id, title, position)
+    VALUES (
+      ${sectionId}, ${title},
+      (SELECT COALESCE(max(position), 0) + 1 FROM subsections WHERE section_id = ${sectionId})
+    )
+    RETURNING *
+  `
+  return sendJson(res, 201, { subsection: toSubsection(row) })
+}
+
+async function updateSubsection(req, res, user) {
+  const subsection = await getOwnedSubsection(user, idSchema.parse(req.query.id))
+  const { title } = updateSubsectionSchema.parse(readBody(req))
+
+  const [row] = await sql`
+    UPDATE subsections SET title = ${title}
+    WHERE id = ${subsection.id}
+    RETURNING *
+  `
+  return sendJson(res, 200, { subsection: toSubsection(row) })
+}
+
+async function reorderSubsections(req, res, user) {
+  const { sectionId, ids } = reorderSubsectionsSchema.parse(readBody(req))
+  await getOwnedSection(user, sectionId)
+  assertSameItems(await sql`SELECT id FROM subsections WHERE section_id = ${sectionId}`, ids, 'parciales')
+
+  await sql`
+    UPDATE subsections ss
+    SET position = t.ord
+    FROM unnest(${ids}::uuid[]) WITH ORDINALITY AS t(id, ord)
+    WHERE ss.id = t.id AND ss.section_id = ${sectionId}
+  `
+  return sendJson(res, 200, { ok: true })
+}
+
+async function deleteSubsection(req, res, user) {
+  const subsection = await getOwnedSubsection(user, idSchema.parse(req.query.id))
+
+  const keys = (
+    await sql`
+      SELECT f.storage_key
+      FROM post_files f
+      JOIN posts po ON po.id = f.post_id
+      WHERE po.subsection_id = ${subsection.id}
+    `
+  ).map((r) => r.storage_key)
+
+  await sql`DELETE FROM subsections WHERE id = ${subsection.id}`
+  const result = await cleanupFiles(keys, `parcial ${subsection.id}`)
+  return sendJson(res, 200, { ok: true, ...result })
+}
+
 // ---------- Enrutado -----------------------------------------------------
+
+/** PATCH con ?action=reorder reordena; si no, actualiza el elemento ?id= */
+const patchOrReorder = (update, reorder) => (req, res, user) =>
+  req.query.action === 'reorder' ? reorder(req, res, user) : update(req, res, user)
 
 const routes = {
   section: {
     POST: createSection,
-    PATCH: (req, res, user) =>
-      req.query.action === 'reorder' ? reorderSections(req, res, user) : updateSection(req, res, user),
+    PATCH: patchOrReorder(updateSection, reorderSections),
     DELETE: deleteSection,
+  },
+  subsection: {
+    POST: createSubsection,
+    PATCH: patchOrReorder(updateSubsection, reorderSubsections),
+    DELETE: deleteSubsection,
   },
 }
 
