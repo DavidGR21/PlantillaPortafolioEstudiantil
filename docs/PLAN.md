@@ -135,7 +135,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Vite + React, carpetas, `.env.example`, `database/schema.sql`, `database/seed_admin.sql`, este plan.
 - `chore: estructura inicial del proyecto, esquema de BD y plan`
 
-**Paso 2 – Configuración de Vercel y dependencias**
+**Paso 2 – Configuración de Vercel y dependencias** ✅
 - `npm i react-router-dom @neondatabase/serverless bcryptjs jsonwebtoken cookie zod`
 - `npm i -D vercel` (para `vercel dev`, que levanta Vite + `/api` juntos en local).
 - `vercel.json` con rewrite de todo lo que no sea `/api/*` a `/index.html`.
