@@ -1107,103 +1107,152 @@
 /* ---------- Pie ------------------------------------------------------------- */
 .site-footer {
   margin-top: auto;
-  color: rgb(236 254 255 / 0.8);
+  color: rgb(236 254 255 / 0.78);
   background:
-    radial-gradient(30rem 16rem at 100% 0%, rgb(251 113 133 / 0.18), transparent 70%),
+    radial-gradient(26rem 10rem at 100% 0%, rgb(251 113 133 / 0.16), transparent 70%),
     linear-gradient(135deg,
       color-mix(in srgb, var(--color-primary) 62%, #04141b) 0%,
       color-mix(in srgb, var(--color-primary) 30%, #030c10) 100%);
-  border-top: 4px solid var(--brand-accent);
+  border-top: 3px solid var(--brand-accent);
 }
 
 .site-footer__inner {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
-  gap: 2rem 3rem;
+  grid-template-columns: minmax(0, 1fr); /* nunca más ancho que la pantalla */
+  gap: 1rem;
   max-width: var(--site-max);
   margin: 0 auto;
-  padding: 2.75rem clamp(1.5rem, 5vw, 4rem) 2rem;
+  padding: 1.4rem clamp(1.25rem, 5vw, 4rem) 1rem;
+}
+
+.site-footer__top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 0;
 }
 
 .site-footer__brand {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
+  min-width: 0;
 }
 
 .site-monogram--footer {
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  font-size: 0.85rem;
   color: var(--color-primary);
   background: #ffffff;
+  border-radius: 0.7rem;
+}
+
+.site-footer__identity {
+  min-width: 0;
 }
 
 .site-footer__title {
   margin: 0;
+  overflow: hidden;
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.05rem;
   font-weight: 650;
+  line-height: 1.25;
   color: #ffffff;
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .site-footer__owner {
-  margin: 0.15rem 0 0;
-  font-size: 0.875rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.75rem;
+  margin: 0.1rem 0 0;
+  font-size: 0.82rem;
 }
 
 .site-footer__institution {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin: 1.1rem 0 0;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .site-footer__institution svg {
-  flex-shrink: 0;
-  margin-top: 0.15rem;
+  margin-right: 0.35rem;
+  vertical-align: -2px;
   color: var(--brand-accent);
 }
 
-.site-footer__heading {
-  margin: 0 0 0.75rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgb(236 254 255 / 0.5);
+/* Accesos a los apartados: enlaces de texto separados por una línea fina.
+   Los nombres largos se recortan con «…» (nombre completo al pasar el ratón). */
+/* Cada enlace lleva su separador delante; la lista se corre a la izquierda
+   el ancho de un separador y el nav lo recorta, así ninguna línea empieza con «|». */
+.site-footer__nav {
+  --sep-space: 0.85rem;
+  overflow: hidden;
 }
 
 .site-footer__nav ul {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
-  gap: 0.45rem 1rem;
-  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0;
+  margin: 0 0 0 calc(-2 * var(--sep-space) - 1px);
   padding: 0;
   list-style: none;
 }
 
+.site-footer__nav li {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  max-width: min(16rem, 100%);
+}
+
+.site-footer__nav li::before {
+  content: '';
+  flex-shrink: 0;
+  width: 1px;
+  height: 0.8rem;
+  margin: 0 var(--sep-space);
+  background: rgb(255 255 255 / 0.22);
+}
+
 .site-footer__nav a {
-  font-size: 0.9rem;
-  color: rgb(236 254 255 / 0.85);
+  display: block;
+  outline-offset: -2px !important;
+  min-width: 0;
+  padding: 0.2rem 0 0.35rem; /* espacio para el subrayado al pasar el ratón */
+  overflow: hidden;
+  font-size: 0.85rem;
+  color: rgb(236 254 255 / 0.72);
   text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.15s ease;
 }
 
 .site-footer__nav a:hover {
   color: #ffffff;
   text-decoration: underline;
   text-decoration-color: var(--brand-accent);
-  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .site-footer__top {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.6rem 1rem;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
   font: inherit;
-  font-size: 0.875rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: #ffffff;
   background: rgb(255 255 255 / 0.1);
@@ -1228,20 +1277,19 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  max-width: var(--site-max);
-  margin: 0 auto;
-  padding: 1.1rem clamp(1.5rem, 5vw, 4rem) 1.4rem;
-  font-size: 0.82rem;
-  border-top: 1px solid rgb(255 255 255 / 0.12);
+  gap: 0.4rem 1rem;
+  padding-top: 0.8rem;
+  font-size: 0.75rem;
+  color: rgb(236 254 255 / 0.6);
+  border-top: 1px solid rgb(255 255 255 / 0.1);
 }
 
 .site-footer__made {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   font-weight: 600;
-  color: rgb(236 254 255 / 0.85);
+  color: rgb(236 254 255 / 0.75);
   text-decoration: none;
 }
 
@@ -1249,9 +1297,47 @@
   color: #ffffff;
 }
 
-@media (max-width: 860px) {
+/* En pantallas angostas «Volver arriba» queda solo con el icono y caben
+   dos fichas de apartado por línea */
+@media (max-width: 560px) {
   .site-footer__inner {
-    grid-template-columns: 1fr;
+    gap: 0.85rem;
+    padding-top: 1.15rem;
+  }
+
+  .site-footer__top-row,
+  .site-footer__brand {
+    align-items: flex-start;
+  }
+
+  .site-footer__nav li {
+    max-width: min(11rem, 100%);
+  }
+
+  .site-footer__nav {
+    --sep-space: 0.6rem;
+  }
+
+  .site-footer__nav a {
+    font-size: 0.8rem;
+  }
+
+  .site-footer__bottom {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .site-footer__top {
+    padding: 0.5rem;
+  }
+
+  .site-footer__top-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 }
 
