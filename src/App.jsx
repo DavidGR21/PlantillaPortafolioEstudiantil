@@ -1,9 +1,14 @@
+import { BrowserRouter } from 'react-router-dom'
+import { AuthProvider } from './context/AuthProvider.jsx'
+import { AppRoutes } from './routes/AppRoutes.jsx'
+
 function App() {
   return (
-    <main className="app-placeholder">
-      <h1>Portafolio Académico</h1>
-      <p>Proyecto en construcción.</p>
-    </main>
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
 

@@ -154,7 +154,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Rechazar login si `is_active = false`; actualizar `last_login_at`.
 - `feat(api): login, logout y sesión con JWT en cookie`
 
-**Paso 5 – Login en el frontend**
+**Paso 5 – Login en el frontend** ✅
 - `AuthContext`, `useAuth`, `services/apiClient.js`, página `/login`, redirección con `?next=`.
 - Guards: `ProtectedRoute`, `AdminRoute`.
 - `feat(web): página de login y contexto de sesión`

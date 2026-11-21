@@ -14,5 +14,9 @@ Plan de trabajo paso a paso: [docs/PLAN.md](docs/PLAN.md)
 ```bash
 npm install
 cp .env.example .env   # completar variables
-npm run dev            # solo frontend (desde el paso 2: `npx vercel dev` para frontend + API)
+npm run dev            # frontend + API en http://localhost:5173
 ```
+
+`npm run dev` sirve también las funciones de `/api` gracias al plugin `dev/vite-api-plugin.js`
+(solo desarrollo). Para reproducir exactamente el entorno de Vercel: `npm run dev:full`
+(requiere `npx vercel login` y `npx vercel link` la primera vez).

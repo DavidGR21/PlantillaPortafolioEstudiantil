@@ -1,0 +1,21 @@
+.home {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1rem;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.home__title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.home__text {
+  margin: 0 0 0.5rem;
+  max-width: 34rem;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+}
