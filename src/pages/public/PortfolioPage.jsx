@@ -8,6 +8,7 @@ import { PagerNav } from '../../components/portfolio/site/PagerNav.jsx'
 import { PortfolioOverview } from '../../components/portfolio/site/PortfolioOverview.jsx'
 import { PortfolioSidebar } from '../../components/portfolio/site/PortfolioSidebar.jsx'
 import { SectionHero } from '../../components/portfolio/site/SectionHero.jsx'
+import { SiteFooter } from '../../components/portfolio/site/SiteFooter.jsx'
 import { StatusMessage } from '../../components/ui/StatusMessage.jsx'
 import { usePublicPortfolio } from '../../hooks/usePublicPortfolio.js'
 import { themeToStyle } from '../../utils/theme.js'
@@ -131,12 +132,7 @@ export default function PortfolioPage() {
           </>
         )}
 
-        <footer className="site-footer">
-          <span>
-            © {portfolio.ownerName} · {portfolio.title}
-          </span>
-          <Link to="/">Creado con Portafolio Académico</Link>
-        </footer>
+        <SiteFooter portfolio={portfolio} sections={sections} />
       </main>
     </div>
   )

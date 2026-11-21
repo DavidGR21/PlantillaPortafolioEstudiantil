@@ -91,6 +91,8 @@ CREATE TABLE IF NOT EXISTS portfolios (
   description     text,
   avatar_url      text,
   avatar_key      text,                              -- clave en el bucket
+  cover_key       text,                              -- imagen de portada (inicio)
+  cover_info      jsonb       NOT NULL DEFAULT '{}'::jsonb, -- datos de carátula
   theme           jsonb       NOT NULL DEFAULT '{}'::jsonb, -- colores, plantilla, etc.
   status          portfolio_status NOT NULL DEFAULT 'active',
   blocked_reason  text,
@@ -142,6 +144,8 @@ CREATE TABLE IF NOT EXISTS sections (
   portfolio_id  uuid        NOT NULL REFERENCES portfolios(id) ON DELETE CASCADE,
   title         varchar(100) NOT NULL,
   slug          varchar(100) NOT NULL,
+  description   text,                                -- texto bajo la portada del apartado
+  cover_key     text,                                -- imagen de portada del apartado
   position      integer     NOT NULL DEFAULT 0,
   created_at    timestamptz NOT NULL DEFAULT now(),
   updated_at    timestamptz NOT NULL DEFAULT now(),
@@ -255,5 +259,8 @@ RETURNS TABLE (storage_key text) AS $$
   JOIN sections    s  ON s.id  = ss.section_id
   WHERE s.portfolio_id = p_portfolio_id
   UNION ALL
-  SELECT avatar_key FROM portfolios WHERE id = p_portfolio_id AND avatar_key IS NOT NULL;
+  SELECT s.cover_key FROM sections s WHERE s.portfolio_id = p_portfolio_id AND s.cover_key IS NOT NULL
+  UNION ALL
+  SELECT k FROM portfolios p, LATERAL (VALUES (p.avatar_key), (p.cover_key)) v(k)
+  WHERE p.id = p_portfolio_id AND k IS NOT NULL;
 $$ LANGUAGE sql STABLE;

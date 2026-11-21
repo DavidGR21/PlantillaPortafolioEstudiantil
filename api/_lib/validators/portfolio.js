@@ -43,6 +43,26 @@ export const createPortfolioSchema = z.object({
   description: optionalText(5000, 'La descripción'),
 })
 
+// Datos de la carátula (página de inicio): institución, subtítulo y líneas «Etiqueta: valor».
+const coverText = (max, label) =>
+  z.string().trim().max(max, { error: `${label} no puede superar ${max} caracteres` }).default('')
+
+export const coverInfoSchema = z.object({
+  institution: coverText(150, 'La institución'),
+  subtitle: coverText(200, 'El subtítulo de la carátula'),
+  fields: z
+    .array(
+      z.object({
+        label: coverText(40, 'La etiqueta'),
+        value: coverText(150, 'El valor'),
+      }),
+    )
+    .max(12, { error: 'Máximo 12 datos en la carátula' })
+    .default([])
+    // Se descartan las filas vacías.
+    .transform((rows) => rows.filter((r) => r.label || r.value)),
+})
+
 export const updatePortfolioSchema = z
   .object({
     slug: slugSchema,
@@ -50,6 +70,7 @@ export const updatePortfolioSchema = z
     subtitle: optionalText(255, 'El subtítulo'),
     description: optionalText(5000, 'La descripción'),
     theme: themeSchema,
+    coverInfo: coverInfoSchema,
   })
   .partial()
   .refine((data) => Object.keys(data).length > 0, { error: 'No hay cambios para guardar' })

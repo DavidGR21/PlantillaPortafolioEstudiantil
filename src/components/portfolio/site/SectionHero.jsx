@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
 import { ChevronRight, FileText, Layers } from 'lucide-react'
 import { pluralize } from '../../../utils/format.js'
+import { heroImageStyle } from './heroStyle.js'
 
 /**
  * Portada del apartado: nombre del apartado, título grande del parcial con
- * subrayado de acento y pestañas para cambiar de parcial.
+ * subrayado de acento y pestañas para cambiar de parcial. Si el apartado tiene
+ * imagen de portada se usa de fondo; su texto de presentación va debajo.
  */
 export function SectionHero({ portfolio, section, subsection }) {
   const base = `/p/${portfolio.slug}/${section.slug}`
@@ -12,7 +14,8 @@ export function SectionHero({ portfolio, section, subsection }) {
   const docs = posts.reduce((n, p) => n + p.files.length, 0)
 
   return (
-    <header className="site-hero">
+    <>
+    <header className={`site-hero${section.coverUrl ? ' site-hero--image site-hero--section' : ''}`} style={heroImageStyle(section.coverUrl)}>
       <div className="site-hero__inner">
         <nav className="site-hero__crumbs" aria-label="Ruta">
           <Link to={`/p/${portfolio.slug}`}>{portfolio.title}</Link>
@@ -57,5 +60,15 @@ export function SectionHero({ portfolio, section, subsection }) {
         )}
       </div>
     </header>
+
+    {/* Texto de presentación del apartado */}
+    {section.description && (
+      <section className="section-intro" aria-label={`Presentación de ${section.title}`}>
+        <div className="section-intro__inner">
+          <p>{section.description}</p>
+        </div>
+      </section>
+    )}
+    </>
   )
 }

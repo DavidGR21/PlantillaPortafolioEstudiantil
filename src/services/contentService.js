@@ -90,3 +90,12 @@ export function reorderPosts(subsectionId, ids) {
 export function deletePost(id) {
   return apiRequest(`content?type=post&id=${enc(id)}`, { method: 'DELETE' })
 }
+
+/** changes: { title?, description? } (texto bajo la portada del apartado) */
+export async function updateSection(id, changes) {
+  const { section } = await apiRequest(`content?type=section&id=${enc(id)}`, {
+    method: 'PATCH',
+    body: changes,
+  })
+  return section
+}

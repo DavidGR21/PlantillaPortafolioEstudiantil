@@ -29,7 +29,19 @@ export const createSectionSchema = z.object({
   title: titleSchema('apartado'),
 })
 
-export const updateSectionSchema = z.object({ title: titleSchema('apartado') })
+export const updateSectionSchema = z
+  .object({
+    title: titleSchema('apartado'),
+    // Texto de presentación bajo la portada del apartado ('' = sin texto).
+    description: z
+      .string()
+      .trim()
+      .max(5000, { error: 'El texto no puede superar 5000 caracteres' })
+      .transform((v) => (v === '' ? null : v))
+      .nullable(),
+  })
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, { error: 'No hay cambios para guardar' })
 
 export const reorderSectionsSchema = z.object({ portfolioId: parentId('Portafolio'), ids: idList })
 

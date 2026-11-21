@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ChevronRight, ExternalLink, FolderPlus, Layers, Settings, ShieldAlert } from 'lucide-react'
+import { ChevronRight, ExternalLink, FolderPlus, ImageIcon, Layers, Settings, ShieldAlert } from 'lucide-react'
 import { AppHeader } from '../../components/layout/AppHeader.jsx'
 import { EditorBusyProvider } from '../../components/editor/EditorBusy.jsx'
+import { HomeCoverModal } from '../../components/editor/HomeCoverModal.jsx'
 import { PortfolioSettingsModal } from '../../components/editor/PortfolioSettingsModal.jsx'
+import { SectionCoverEditor } from '../../components/editor/SectionCoverEditor.jsx'
 import { PostsManager } from '../../components/editor/PostsManager.jsx'
 import { SectionsManager } from '../../components/editor/SectionsManager.jsx'
 import { SubsectionsManager } from '../../components/editor/SubsectionsManager.jsx'
@@ -21,6 +23,7 @@ export default function EditorPage() {
   const [selectedId, setSelectedId] = useState(null)
   const [selectedSubId, setSelectedSubId] = useState(null)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [isCoverOpen, setIsCoverOpen] = useState(false)
   const navigate = useNavigate()
 
   async function handleSettingsSaved(updated) {
@@ -77,6 +80,10 @@ export default function EditorPage() {
               <h1 className="editor__title">{portfolio.title}</h1>
             </div>
             <div className="editor__header-actions">
+              <button type="button" className="btn btn--ghost" onClick={() => setIsCoverOpen(true)}>
+                <ImageIcon size={17} aria-hidden="true" />
+                Portada e inicio
+              </button>
               <button type="button" className="btn btn--ghost" onClick={() => setIsSettingsOpen(true)}>
                 <Settings size={17} aria-hidden="true" />
                 Configuración
@@ -133,6 +140,8 @@ export default function EditorPage() {
                     </a>
                   </header>
 
+                  <SectionCoverEditor key={selected.id} section={selected} onChanged={reload} />
+
                   <SubsectionsManager
                     section={selected}
                     selectedId={selectedSub?.id}
@@ -167,6 +176,10 @@ export default function EditorPage() {
           </div>
         </main>
       </EditorBusyProvider>
+
+      {isCoverOpen && (
+        <HomeCoverModal portfolio={portfolio} onChanged={reload} onClose={() => setIsCoverOpen(false)} />
+      )}
 
       {isSettingsOpen && (
         <PortfolioSettingsModal

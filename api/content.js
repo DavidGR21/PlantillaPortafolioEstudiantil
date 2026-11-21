@@ -67,7 +67,7 @@ function assertSameItems(currentRows, ids, label) {
 // ---------- Apartados ----------------------------------------------------
 
 function toSection(row) {
-  return { id: row.id, title: row.title, slug: row.slug, position: row.position }
+  return { id: row.id, title: row.title, slug: row.slug, description: row.description, position: row.position }
 }
 
 /** Slug único del apartado dentro del portafolio (excluyendo el propio al renombrar). */
@@ -112,13 +112,18 @@ async function createSection(req, res, user) {
 
 async function updateSection(req, res, user) {
   const section = await getOwnedSection(user, idSchema.parse(req.query.id))
-  const { title } = updateSectionSchema.parse(readBody(req))
+  const data = updateSectionSchema.parse(readBody(req))
+  const title = data.title ?? section.title
+  const hasDescription = Object.hasOwn(data, 'description')
 
-  // El slug (la URL del apartado) se regenera a partir del nuevo nombre.
-  const slug = await freeSectionSlug(section.portfolio_id, title, section.id)
+  // El slug (la URL del apartado) se regenera solo si cambia el nombre.
+  const slug = data.title ? await freeSectionSlug(section.portfolio_id, title, section.id) : section.slug
   try {
     const [row] = await sql`
-      UPDATE sections SET title = ${title}, slug = ${slug}
+      UPDATE sections SET
+        title = ${title},
+        slug = ${slug},
+        description = CASE WHEN ${hasDescription} THEN ${data.description ?? null} ELSE description END
       WHERE id = ${section.id}
       RETURNING *
     `
@@ -158,6 +163,7 @@ async function deleteSection(req, res, user) {
       WHERE ss.section_id = ${section.id}
     `
   ).map((r) => r.storage_key)
+  if (section.cover_key) keys.push(section.cover_key) // imagen de portada del apartado
 
   await sql`DELETE FROM sections WHERE id = ${section.id}`
   const result = await cleanupFiles(keys, `apartado ${section.id}`)

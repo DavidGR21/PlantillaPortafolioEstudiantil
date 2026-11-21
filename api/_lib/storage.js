@@ -70,6 +70,15 @@ export function buildPostFileKey({ portfolioId, postId, fileName }) {
   return `portfolios/${portfolioId}/posts/${postId}/${crypto.randomUUID()}-${safeFileName(fileName)}`
 }
 
+/** portfolios/<portfolioId>/covers/<uuid>-<nombre> (portadas del inicio y de los apartados) */
+export function coverKeyPrefix(portfolioId) {
+  return `portfolios/${portfolioId}/covers/`
+}
+
+export function buildCoverKey({ portfolioId, fileName }) {
+  return `${coverKeyPrefix(portfolioId)}${crypto.randomUUID()}-${safeFileName(fileName)}`
+}
+
 // ---------- URLs firmadas ----------------------------------------------------
 
 /**

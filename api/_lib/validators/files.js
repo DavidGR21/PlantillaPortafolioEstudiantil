@@ -43,6 +43,30 @@ export const presignSchema = z
     }
   })
 
+// ---------- Portadas (imagen del inicio o de un apartado) ----------
+const IMAGE_TYPES = Object.keys(ALLOWED_TYPES).filter((t) => ALLOWED_TYPES[t].kind === 'image')
+
+const coverTarget = {
+  target: z.enum(['portfolio', 'section'], { error: 'Destino de la portada no válido' }),
+  id: z.uuid({ error: 'Identificador no válido' }),
+}
+
+export const coverPresignSchema = z
+  .object({
+    ...coverTarget,
+    fileName,
+    mimeType: z.enum(IMAGE_TYPES, { error: 'La portada debe ser una imagen JPG, PNG, WEBP o GIF.' }),
+    size: z.number({ error: 'Tamaño no válido' }).int().positive({ error: 'El archivo está vacío' }),
+  })
+  .refine((d) => d.size <= ALLOWED_TYPES[d.mimeType].maxSize, {
+    error: 'La imagen supera el máximo de 10 MB.',
+    path: ['size'],
+  })
+
+export const coverSetSchema = z.object({ ...coverTarget, key: z.string().min(1).max(500) })
+
+export const coverRemoveSchema = z.object(coverTarget)
+
 export const registerSchema = z.object({
   postId: z.uuid({ error: 'Publicación no válida' }),
   key: z.string().min(1).max(500),

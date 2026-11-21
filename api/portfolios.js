@@ -30,6 +30,7 @@ function toPortfolio(row) {
     description: row.description,
     avatarUrl: row.avatar_url,
     theme: row.theme,
+    coverInfo: row.cover_info ?? {},
     status: row.status,
     blockedReason: row.blocked_reason,
     blockedAt: row.blocked_at,
@@ -163,7 +164,10 @@ async function update(req, res, user) {
         description = CASE WHEN ${has('description')} THEN ${data.description ?? null} ELSE description END,
         theme       = CASE WHEN ${has('theme')}
                            THEN ${has('theme') ? JSON.stringify(data.theme) : null}::jsonb
-                           ELSE theme END
+                           ELSE theme END,
+        cover_info  = CASE WHEN ${has('coverInfo')}
+                           THEN ${has('coverInfo') ? JSON.stringify(data.coverInfo) : null}::jsonb
+                           ELSE cover_info END
       WHERE id = ${portfolio.id}
       RETURNING *
     `

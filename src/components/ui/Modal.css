@@ -10,6 +10,7 @@
 
 .modal--sm { max-width: 26rem; }
 .modal--md { max-width: 34rem; }
+.modal--lg { max-width: 46rem; }
 
 .modal::backdrop {
   background: rgb(15 23 42 / 0.45);

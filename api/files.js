@@ -1,9 +1,11 @@
 import { sql } from './_lib/db.js'
 import { requireUser } from './_lib/auth.js'
 import { createHandler, HttpError, readBody, sendJson } from './_lib/http.js'
-import { getOwnedFile, getOwnedPost } from './_lib/ownership.js'
+import { getOwnedFile, getOwnedPortfolio, getOwnedPost, getOwnedSection } from './_lib/ownership.js'
 import {
+  buildCoverKey,
   buildPostFileKey,
+  coverKeyPrefix,
   createDownloadUrl,
   createUploadUrl,
   deleteStorageObjects,
@@ -12,6 +14,9 @@ import {
 } from './_lib/storage.js'
 import {
   ALLOWED_TYPES,
+  coverPresignSchema,
+  coverRemoveSchema,
+  coverSetSchema,
   idSchema,
   MAX_FILES_PER_POST,
   presignSchema,
@@ -135,6 +140,71 @@ async function remove(req, res, user) {
 
 // ---------- Enrutado -----------------------------------------------------
 
+// ---------- Portadas ------------------------------------------------------------
+/*
+ *  POST   /api/files?action=cover-presign { target: 'portfolio'|'section', id, fileName, mimeType, size }
+ *  POST   /api/files?action=cover         { target, id, key }   -> { coverUrl }  (reemplaza la anterior)
+ *  DELETE /api/files?action=cover&target=…&id=…                 -> { ok }
+ */
+
+/** Portafolio o apartado del usuario + portafolio al que pertenece. */
+async function ownedCoverTarget(user, target, id) {
+  if (target === 'portfolio') {
+    const portfolio = await getOwnedPortfolio(user, id)
+    return { portfolioId: portfolio.id, currentKey: portfolio.cover_key }
+  }
+  const section = await getOwnedSection(user, id)
+  return { portfolioId: section.portfolio_id, currentKey: section.cover_key }
+}
+
+async function coverPresign(req, res, user) {
+  const { target, id, fileName, mimeType, size } = coverPresignSchema.parse(readBody(req))
+  const { portfolioId } = await ownedCoverTarget(user, target, id)
+  const key = buildCoverKey({ portfolioId, fileName })
+  const uploadUrl = await createUploadUrl({ key, contentType: mimeType, size })
+  return sendJson(res, 200, { uploadUrl, key, expiresIn: UPLOAD_URL_TTL })
+}
+
+async function coverSet(req, res, user) {
+  const { target, id, key } = coverSetSchema.parse(readBody(req))
+  const { portfolioId, currentKey } = await ownedCoverTarget(user, target, id)
+
+  if (!key.startsWith(coverKeyPrefix(portfolioId)) || key.includes('..')) {
+    throw new HttpError(400, 'La imagen no corresponde a este portafolio', 'INVALID_KEY')
+  }
+  // Cada imagen subida solo puede ser portada de un sitio (si no, borrar una rompería la otra).
+  const [inUse] = await sql`
+    SELECT 1 FROM portfolios WHERE cover_key = ${key}
+    UNION ALL SELECT 1 FROM sections WHERE cover_key = ${key}
+    LIMIT 1
+  `
+  if (inUse) throw new HttpError(409, 'Esa imagen ya se está usando como portada', 'ALREADY_SET')
+
+  const object = await headStorageObject(key)
+  if (!object) throw new HttpError(409, 'La imagen no terminó de subirse. Inténtalo de nuevo.', 'UPLOAD_NOT_FOUND')
+  const rules = ALLOWED_TYPES[object.contentType]
+  if (rules?.kind !== 'image' || object.size > rules.maxSize) {
+    await deleteStorageObjects([key])
+    throw new HttpError(400, 'El archivo subido no es una imagen válida', 'INVALID_UPLOAD')
+  }
+
+  if (target === 'portfolio') await sql`UPDATE portfolios SET cover_key = ${key} WHERE id = ${id}`
+  else await sql`UPDATE sections SET cover_key = ${key} WHERE id = ${id}`
+
+  // La imagen anterior ya no se usa: se borra del bucket.
+  if (currentKey) await deleteStorageObjects([currentKey])
+  return sendJson(res, 200, { coverUrl: await createDownloadUrl(key) })
+}
+
+async function coverRemove(req, res, user) {
+  const { target, id } = coverRemoveSchema.parse(req.query)
+  const { currentKey } = await ownedCoverTarget(user, target, id)
+  if (target === 'portfolio') await sql`UPDATE portfolios SET cover_key = NULL WHERE id = ${id}`
+  else await sql`UPDATE sections SET cover_key = NULL WHERE id = ${id}`
+  if (currentKey) await deleteStorageObjects([currentKey])
+  return sendJson(res, 200, { ok: true })
+}
+
 function withUser(fn) {
   return async (req, res) => fn(req, res, await requireUser(req))
 }
@@ -142,8 +212,14 @@ function withUser(fn) {
 export default createHandler({
   POST: withUser((req, res, user) => {
     if (req.query.action === 'presign') return presign(req, res, user)
+    if (req.query.action === 'cover-presign') return coverPresign(req, res, user)
+    if (req.query.action === 'cover') return coverSet(req, res, user)
     if (req.query.action) throw new HttpError(404, 'Acción no encontrada', 'NOT_FOUND')
     return register(req, res, user)
   }),
-  DELETE: withUser(remove),
+  DELETE: withUser((req, res, user) => {
+    if (req.query.action === 'cover') return coverRemove(req, res, user)
+    if (req.query.action) throw new HttpError(404, 'Acción no encontrada', 'NOT_FOUND')
+    return remove(req, res, user)
+  }),
 })

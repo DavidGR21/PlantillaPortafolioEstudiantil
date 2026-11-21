@@ -28,10 +28,11 @@ export function PortfolioSidebar({ portfolio, sections, activeSectionId, activeS
 
       <aside id="site-nav" className={`site-sidebar${open ? ' site-sidebar--open' : ''}`} aria-label="Menú del portafolio">
         <div className="site-sidebar__brand">
-          <span className="site-monogram" aria-hidden="true">
+          <span className="site-monogram site-monogram--brand" aria-hidden="true">
             {initialsOf(portfolio.title)}
           </span>
           <div className="site-sidebar__brand-text">
+            <span className="site-sidebar__kicker">Portafolio académico</span>
             <Link to={base} className="site-sidebar__title" onClick={onNavigate}>
               {portfolio.title}
             </Link>

@@ -28,8 +28,9 @@ async function signSectionFiles(sections) {
   }
 
   return Promise.all(
-    sections.map(async (section) => ({
+    sections.map(async ({ coverKey, ...section }) => ({
       ...section,
+      coverUrl: coverKey ? await createDownloadUrl(coverKey) : null,
       subsections: await Promise.all(
         section.subsections.map(async (sub) => ({
           ...sub,
@@ -50,11 +51,13 @@ async function getPublicPortfolio(req, res) {
   const [row] = await sql`
     SELECT
       p.id, p.owner_id, p.slug, p.title, p.subtitle, p.description, p.avatar_key, p.theme,
+      p.cover_key, p.cover_info,
       p.status, p.updated_at,
       u.full_name AS owner_name, u.is_active AS owner_active,
       COALESCE((
         SELECT json_agg(json_build_object(
           'id', s.id, 'title', s.title, 'slug', s.slug,
+          'description', s.description, 'coverKey', s.cover_key,
           'subsections', COALESCE((
             SELECT json_agg(json_build_object(
               'id', ss.id, 'title', ss.title,
@@ -95,9 +98,10 @@ async function getPublicPortfolio(req, res) {
     throw new HttpError(403, 'Este portafolio no está disponible en este momento', 'PORTFOLIO_UNAVAILABLE')
   }
 
-  const [sections, avatarUrl] = await Promise.all([
+  const [sections, avatarUrl, coverUrl] = await Promise.all([
     signSectionFiles(row.sections),
     row.avatar_key ? createDownloadUrl(row.avatar_key) : null,
+    row.cover_key ? createDownloadUrl(row.cover_key) : null,
   ])
 
   return sendJson(res, 200, {
@@ -108,6 +112,8 @@ async function getPublicPortfolio(req, res) {
       subtitle: row.subtitle,
       description: row.description,
       avatarUrl,
+      coverUrl,
+      coverInfo: row.cover_info ?? {},
       theme: row.theme,
       ownerName: row.owner_name,
       updatedAt: row.updated_at,

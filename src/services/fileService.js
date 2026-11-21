@@ -61,3 +61,23 @@ function putWithProgress(url, file, contentType, onProgress, signal) {
     xhr.send(file)
   })
 }
+
+/**
+ * Sube una imagen de portada (target: 'portfolio' | 'section') y la asigna.
+ * Reemplaza la anterior (la API la borra del bucket). Devuelve { coverUrl }.
+ */
+export async function uploadCover(target, id, file, { onProgress, signal } = {}) {
+  const mimeType = detectMimeType(file)
+  const { uploadUrl, key } = await apiRequest('files?action=cover-presign', {
+    method: 'POST',
+    body: { target, id, fileName: file.name, mimeType, size: file.size },
+    signal,
+  })
+  await putWithProgress(uploadUrl, file, mimeType, onProgress, signal)
+  return apiRequest('files?action=cover', { method: 'POST', body: { target, id, key }, signal })
+}
+
+export function removeCover(target, id) {
+  const params = new URLSearchParams({ action: 'cover', target, id })
+  return apiRequest(`files?${params}`, { method: 'DELETE' })
+}

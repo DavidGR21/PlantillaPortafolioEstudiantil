@@ -1398,13 +1398,8 @@ button.post-files__name:hover {
     width: 100%;
   }
 
-  .editor__header-actions {
-    flex-wrap: nowrap;
-  }
-
   .editor__header-actions .btn {
-    flex: 1 1 0;
-    min-width: 0;
+    flex: 1 1 9rem;
     padding-inline: 0.6rem;
   }
 
@@ -1414,5 +1409,270 @@ button.post-files__name:hover {
 
   .post-card .dropzone__row {
     flex-wrap: nowrap;
+  }
+}
+
+/* ---------- Campo de imagen de portada --------------------------------------- */
+.cover-field {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.cover-field__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+
+.cover-field__preview {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 6;
+  overflow: hidden;
+  color: color-mix(in srgb, var(--color-primary) 55%, white);
+  background:
+    radial-gradient(rgb(255 255 255 / 0.15) 1px, transparent 1px) 0 0 / 16px 16px,
+    linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary) 55%, #071a22));
+  border-radius: 0.9rem;
+}
+
+.cover-field__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-field__preview--empty {
+  color: rgb(255 255 255 / 0.75);
+}
+
+.cover-field__progress {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgb(11 37 48 / 0.55);
+}
+
+.cover-field__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cover-field__actions label.btn {
+  cursor: pointer;
+}
+
+.cover-field__actions .is-disabled {
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.cover-field__actions label.btn:focus-within {
+  outline: 3px solid var(--brand-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Portada y texto del apartado (editor) ------------------------------ */
+.section-cover {
+  overflow: hidden;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+}
+
+.section-cover__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.section-cover__toggle:focus-visible {
+  outline: 3px solid var(--brand-accent);
+  outline-offset: -3px;
+}
+
+.section-cover__toggle-icon {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  color: var(--color-primary);
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 0.6rem;
+}
+
+.section-cover__toggle-text {
+  display: grid;
+  flex: 1;
+  gap: 0.05rem;
+}
+
+.section-cover__toggle-text strong {
+  font-size: 0.925rem;
+  color: var(--brand-ink);
+}
+
+.section-cover__toggle-text span {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.section-cover__chevron {
+  color: #94a3b8;
+  transition: transform 0.15s ease;
+}
+
+.section-cover--open .section-cover__chevron {
+  transform: rotate(180deg);
+}
+
+.section-cover__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  padding: 0.25rem 1rem 1rem;
+}
+
+.section-cover__text {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+}
+
+.section-cover__text label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+
+.section-cover__text textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+  color: inherit;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  resize: vertical;
+}
+
+.section-cover__text textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.section-cover__text-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+@media (max-width: 760px) {
+  .section-cover__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Carátula (ventana «Portada e inicio») ------------------------------- */
+.home-cover__caratula {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+}
+
+.home-cover__caratula legend {
+  padding: 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+
+.home-cover__caratula > .field__hint {
+  margin-top: -0.4rem;
+}
+
+.home-cover__fields {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.home-cover__fields-head,
+.home-cover__row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.home-cover__fields-head {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.home-cover__fields-head span:last-child {
+  grid-column: 2 / 4;
+}
+
+.home-cover__row input {
+  width: 100%;
+  min-height: 2.35rem;
+  padding: 0.4rem 0.65rem;
+  font: inherit;
+  color: inherit;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+}
+
+.home-cover__row input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.home-cover__row-actions {
+  display: flex;
+}
+
+.home-cover__add {
+  justify-self: start;
+}
+
+@media (max-width: 560px) {
+  .home-cover__fields-head {
+    display: none;
+  }
+
+  .home-cover__row {
+    grid-template-columns: 1fr auto;
+  }
+
+  .home-cover__row input:first-child {
+    grid-column: 1 / -1;
+    font-weight: 600;
   }
 }
