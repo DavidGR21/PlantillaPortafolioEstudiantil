@@ -225,7 +225,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Rate limit básico en login, mensajes de error genéricos, cabeceras de seguridad en `vercel.json`, revisar que **todas** las rutas de escritura validen propiedad, cambio de contraseña del propio usuario.
 - `fix: endurecer seguridad de la API`
 
-**Paso 20 – Despliegue en Vercel**
+**Paso 20 – Despliegue en Vercel** ✅
 - Importar repo, variables de entorno, probar flujo completo en producción, README con instrucciones.
 - Restringir el CORS del bucket al dominio final: `npm run bucket:cors -- https://<dominio> --aplicar`.
 - Comprobar en producción la CSP de `vercel.json` (imágenes, visor PDF y subidas al bucket).
