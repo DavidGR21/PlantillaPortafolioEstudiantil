@@ -142,7 +142,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Limpiar el contenido de ejemplo de Vite.
 - `chore: configurar vercel, dependencias y limpiar plantilla`
 
-**Paso 3 – Base de datos en Neon**
+**Paso 3 – Base de datos en Neon** ✅
 - Crear proyecto en Neon → ejecutar `schema.sql` y luego `seed_admin.sql` (cambiar credenciales).
 - Configurar `DATABASE_URL` en `.env` y en Vercel.
 - `api/_lib/db.js` + endpoint temporal de salud (`SELECT 1`).
