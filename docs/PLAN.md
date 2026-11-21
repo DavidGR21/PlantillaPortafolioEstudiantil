@@ -149,7 +149,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - `feat(api): conexión a Neon`
 
 ### Fase 1 – Autenticación
-**Paso 4 – API de autenticación**
+**Paso 4 – API de autenticación** ✅
 - `_lib/auth.js` (JWT en cookie), `_lib/http.js`, `api/auth.js` (login, logout, me).
 - Rechazar login si `is_active = false`; actualizar `last_login_at`.
 - `feat(api): login, logout y sesión con JWT en cookie`
