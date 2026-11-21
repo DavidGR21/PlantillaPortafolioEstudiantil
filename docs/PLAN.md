@@ -160,7 +160,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - `feat(web): página de login y contexto de sesión`
 
 ### Fase 2 – Portafolios
-**Paso 6 – API de portafolios**
+**Paso 6 – API de portafolios** ✅
 - Listar los míos, crear (validar slug único y límite → error claro con `PORTFOLIO_LIMIT_REACHED`), editar datos generales, eliminar (borrar primero archivos del bucket con `portfolio_storage_keys`).
 - `feat(api): CRUD de portafolios con límite por usuario`
 

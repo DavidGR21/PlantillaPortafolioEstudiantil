@@ -40,7 +40,9 @@ function assertJsonRequest(req) {
   }
 }
 
-const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
+// DELETE no se incluye: un formulario HTML no puede enviarlo y, desde otro
+// dominio, fetch con DELETE requiere permiso CORS (que no damos).
+const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH'])
 
 /**
  * Crea un handler de Vercel a partir de un mapa de métodos:
