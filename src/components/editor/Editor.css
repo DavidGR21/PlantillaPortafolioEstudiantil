@@ -1,0 +1,238 @@
+/* =====================================================================
+   Modo edición
+   ===================================================================== */
+.editor {
+  max-width: 72rem;
+}
+
+.editor__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.editor__eyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.editor__title {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.editor__header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editor__notice {
+  margin-bottom: 1.5rem;
+}
+
+.editor__layout {
+  display: grid;
+  grid-template-columns: minmax(16rem, 22rem) 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.editor__section-link {
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.editor__placeholder {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 800px) {
+  .editor__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Panel genérico ------------------------------------------------ */
+.editor-panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.editor-panel__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+}
+
+.editor-panel__title {
+  margin: 0;
+  font-size: 1.15rem;
+  overflow-wrap: anywhere;
+}
+
+.editor-panel__count {
+  font-size: 0.85rem;
+}
+
+.editor-panel .text-muted {
+  margin: 0;
+}
+
+/* ---------- Apartados ------------------------------------------------------ */
+.sections-manager__empty {
+  font-size: 0.9rem;
+}
+
+.sections-manager__list {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.section-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+}
+
+.section-row:hover {
+  background: var(--color-bg);
+}
+
+.section-row--selected,
+.section-row--selected:hover {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+
+.section-row__select {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 0.4rem 0.5rem;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.section-row__index {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+}
+
+.section-row__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.section-row__actions {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.section-row__rename {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.25rem;
+}
+
+.section-row__rename input,
+.sections-manager__add input {
+  flex: 1;
+  min-width: 8rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.6rem;
+  font: inherit;
+  color: inherit;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.section-row__rename input:focus,
+.sections-manager__add input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.sections-manager__add {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---------- Botón de icono -------------------------------------------------- */
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.icon-btn:hover:not(:disabled) {
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.icon-btn--danger:hover:not(:disabled) {
+  color: var(--color-danger);
+}
+
+/* ---------- Diálogo de confirmación ---------------------------------------- */
+.confirm-dialog__body p {
+  margin: 0;
+}

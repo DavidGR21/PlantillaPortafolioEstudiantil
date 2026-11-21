@@ -174,7 +174,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - `feat: vista pública del portafolio`
 
 ### Fase 3 – Contenido (modo edición)
-**Paso 9 – Apartados del menú**
+**Paso 9 – Apartados del menú** ✅
 - API y UI: crear, renombrar, eliminar (con confirmación), reordenar.
 - Reservar el slug de apartado `editar` (choca con la ruta `/p/:slug/editar`).
 - `feat: gestión de apartados del menú`

@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getPublicPortfolio } from '../services/publicService.js'
 
 /**
- * Carga el portafolio público por slug.
- * Devuelve { data, error, isLoading }; al cambiar de slug vuelve a "cargando".
+ * Carga el portafolio por slug (vista pública y editor).
+ * Devuelve { data, error, isLoading, reload }.
+ * - Al cambiar de slug vuelve a "cargando".
+ * - reload() vuelve a pedir los datos sin ocultar los actuales y devuelve una
+ *   promesa que se resuelve cuando ya están en pantalla (lanza si falla).
  */
 export function usePublicPortfolio(slug) {
   const [result, setResult] = useState(null) // { slug, data, error }
@@ -18,6 +21,11 @@ export function usePublicPortfolio(slug) {
     return () => controller.abort()
   }, [slug])
 
-  if (result?.slug !== slug) return { data: null, error: null, isLoading: true }
-  return { data: result.data, error: result.error, isLoading: false }
+  const reload = useCallback(async () => {
+    const data = await getPublicPortfolio(slug)
+    setResult({ slug, data, error: null })
+  }, [slug])
+
+  if (result?.slug !== slug) return { data: null, error: null, isLoading: true, reload }
+  return { data: result.data, error: result.error, isLoading: false, reload }
 }

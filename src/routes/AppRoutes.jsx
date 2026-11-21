@@ -6,6 +6,7 @@ import NotFoundPage from '../pages/public/NotFoundPage.jsx'
 import PortfolioPage from '../pages/public/PortfolioPage.jsx'
 import LoginPage from '../pages/auth/LoginPage.jsx'
 import DashboardPage from '../pages/dashboard/DashboardPage.jsx'
+import EditorPage from '../pages/editor/EditorPage.jsx'
 import AdminHomePage from '../pages/admin/AdminHomePage.jsx'
 
 export function AppRoutes() {
@@ -20,6 +21,8 @@ export function AppRoutes() {
       {/* Requieren sesión */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        {/* Ruta fija: tiene prioridad sobre /p/:slug/:sectionSlug */}
+        <Route path="/p/:slug/editar" element={<EditorPage />} />
 
         {/* Requieren rol admin */}
         <Route element={<AdminRoute />}>
