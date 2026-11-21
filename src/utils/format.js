@@ -5,6 +5,14 @@ export function formatDate(value) {
   return dateFormatter.format(new Date(value))
 }
 
+const dateTimeFormatter = new Intl.DateTimeFormat('es', { dateStyle: 'medium', timeStyle: 'short' })
+
+/** "21 nov 2026, 7:23" */
+export function formatDateTime(value) {
+  if (!value) return ''
+  return dateTimeFormatter.format(new Date(value))
+}
+
 /** 1536 -> "1.5 KB" */
 export function formatBytes(bytes) {
   if (!Number.isFinite(bytes) || bytes <= 0) return '0 B'

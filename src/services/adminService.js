@@ -57,6 +57,19 @@ export function deletePortfolioAsAdmin(id) {
   return apiRequest(`admin?resource=portfolios&id=${enc(id)}`, { method: 'DELETE' })
 }
 
+// ---------- Bitácora ----------------------------------------------------------
+
+/**
+ * filters: { targetType?, action?, q? }; before: cursor de la página anterior.
+ * Devuelve { actions, nextCursor }.
+ */
+export function listActions({ targetType = 'all', action = 'all', q = '' } = {}, { before, signal } = {}) {
+  const params = new URLSearchParams({ resource: 'actions', targetType, action })
+  if (q.trim()) params.set('q', q.trim())
+  if (before) params.set('before', String(before))
+  return apiRequest(`admin?${params}`, { signal })
+}
+
 export function resetUserPassword(id, password) {
   return apiRequest(`admin?resource=users&id=${enc(id)}&action=reset-password`, {
     method: 'POST',

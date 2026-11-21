@@ -212,7 +212,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Listar todos (filtro por estado/dueño), ver contenido aunque esté bloqueado, bloquear con motivo, desbloquear, eliminar (limpiando el bucket).
 - `feat(admin): bloquear, desbloquear y eliminar portafolios`
 
-**Paso 17 – Bitácora**
+**Paso 17 – Bitácora** ✅
 - Página `/admin/bitacora` leyendo `admin_actions`.
 - `feat(admin): bitácora de acciones`
 

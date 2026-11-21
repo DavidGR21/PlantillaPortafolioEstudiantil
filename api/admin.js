@@ -8,6 +8,7 @@ import {
   blockPortfolioSchema,
   createUserSchema,
   idSchema,
+  listActionsSchema,
   listPortfoliosSchema,
   listUsersSchema,
   resetPasswordSchema,
@@ -30,7 +31,9 @@ import {
  *   DELETE ?resource=portfolios&id=<uuid>                             -> { ok, filesDeleted, filesFailed }
  *   (Para VER el contenido, el admin usa /api/public: ve también los bloqueados.)
  *
- * (La bitácora se agrega en el paso 17.)
+ * Bitácora (resource=actions):
+ *   GET ?resource=actions[&targetType=all|user|portfolio][&action=...][&q=texto][&before=<id>][&limit=50]
+ *       -> { actions, nextCursor }   (nextCursor = valor para ?before= de la página siguiente)
  * Cada cambio queda registrado en admin_actions.
  */
 
@@ -322,6 +325,48 @@ async function deletePortfolio(req, res, admin) {
   return sendJson(res, 200, { ok: true, filesDeleted: keys.length - failed.length, filesFailed: failed.length })
 }
 
+// ---------- Bitácora ----------------------------------------------------------
+
+async function listActions(req, res) {
+  const { targetType, action, q, before, limit } = listActionsSchema.parse(req.query)
+  const pattern = q ? `%${q.replace(/[\\%_]/g, '\\$&')}%` : null
+
+  // Se pide una fila de más para saber si hay otra página.
+  const rows = await sql`
+    SELECT a.id, a.action, a.target_type, a.target_id, a.details, a.created_at,
+           a.admin_id, u.full_name AS admin_name, u.email AS admin_email
+    FROM admin_actions a
+    LEFT JOIN users u ON u.id = a.admin_id
+    WHERE (${targetType} = 'all' OR a.target_type = ${targetType})
+      AND (${action} = 'all' OR a.action = ${action})
+      AND (${before ?? null}::bigint IS NULL OR a.id < ${before ?? null}::bigint)
+      AND (
+        ${pattern}::text IS NULL
+        OR a.details::text ILIKE ${pattern}
+        OR u.full_name ILIKE ${pattern}
+        OR u.email::text ILIKE ${pattern}
+      )
+    ORDER BY a.id DESC
+    LIMIT ${limit + 1}
+  `
+
+  const hasMore = rows.length > limit
+  const page = rows.slice(0, limit)
+  return sendJson(res, 200, {
+    actions: page.map((row) => ({
+      id: Number(row.id),
+      action: row.action,
+      targetType: row.target_type,
+      targetId: row.target_id,
+      details: row.details,
+      createdAt: row.created_at,
+      // admin_id queda en NULL si el administrador fue eliminado.
+      admin: row.admin_id ? { id: row.admin_id, fullName: row.admin_name, email: row.admin_email } : null,
+    })),
+    nextCursor: hasMore ? Number(page.at(-1).id) : null,
+  })
+}
+
 // ---------- Enrutado -----------------------------------------------------
 
 const routes = {
@@ -342,6 +387,9 @@ const routes = {
       throw new HttpError(404, 'Acción no encontrada', 'NOT_FOUND')
     },
     DELETE: deletePortfolio,
+  },
+  actions: {
+    GET: listActions,
   },
 }
 

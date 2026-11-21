@@ -51,6 +51,33 @@ export const listPortfoliosSchema = z.object({
   status: z.enum(['all', 'active', 'blocked'], { error: 'Estado no válido' }).default('all'),
 })
 
+// ---------- Bitácora ----------------------------------------------------------
+
+export const AUDIT_ACTIONS = [
+  'CREATE_USER',
+  'UPDATE_USER',
+  'ACTIVATE_USER',
+  'DEACTIVATE_USER',
+  'RESET_PASSWORD',
+  'BLOCK_PORTFOLIO',
+  'UNBLOCK_PORTFOLIO',
+  'DELETE_PORTFOLIO',
+]
+
+export const listActionsSchema = z.object({
+  targetType: z.enum(['all', 'user', 'portfolio'], { error: 'Tipo no válido' }).default('all'),
+  action: z.enum(['all', ...AUDIT_ACTIONS], { error: 'Acción no válida' }).default('all'),
+  q: z.string().trim().max(100).optional(),
+  // Paginación: id de la última fila recibida; se devuelven las anteriores a ella.
+  before: z.coerce.number({ error: 'Cursor no válido' }).int().positive().optional(),
+  limit: z.coerce
+    .number({ error: 'Límite no válido' })
+    .int({ error: 'Límite no válido' })
+    .min(1, { error: 'El límite mínimo es 1' })
+    .max(100, { error: 'El límite máximo es 100' })
+    .default(50),
+})
+
 export const blockPortfolioSchema = z.object({
   reason: z
     .string({ error: 'Indica el motivo del bloqueo' })

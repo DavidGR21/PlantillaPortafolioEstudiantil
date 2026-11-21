@@ -39,10 +39,6 @@
   border-bottom-color: var(--color-primary);
 }
 
-.admin__tab--soon {
-  cursor: default;
-  opacity: 0.5;
-}
 
 /* ---------- Sección ------------------------------------------------------ */
 .admin-section {
@@ -322,4 +318,70 @@
     white-space: normal;
     text-align: right;
   }
+}
+
+/* ---------- Bitácora ------------------------------------------------------ */
+.admin-toolbar__select {
+  min-height: 2.5rem;
+  padding: 0.45rem 0.6rem;
+  font: inherit;
+  color: inherit;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.audit-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.audit-item {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.audit-item__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.audit-item__time {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.audit-item__summary {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.audit-item__details {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.audit-item__by {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.audit-more {
+  display: flex;
+  justify-content: center;
 }
