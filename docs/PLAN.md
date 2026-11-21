@@ -168,7 +168,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - Lista, contador "2 de 3", crear, eliminar con confirmación, enlace público y botón editar.
 - `feat(web): dashboard de portafolios del estudiante`
 
-**Paso 8 – Vista pública**
+**Paso 8 – Vista pública** ✅
 - `api/public.js` devuelve el árbol completo (portafolio → apartados → parciales → publicaciones → archivos) en una sola consulta.
 - Página `/p/:slug` con menú de navegación, pantalla 404 y "portafolio no disponible".
 - `feat: vista pública del portafolio`
@@ -176,6 +176,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 ### Fase 3 – Contenido (modo edición)
 **Paso 9 – Apartados del menú**
 - API y UI: crear, renombrar, eliminar (con confirmación), reordenar.
+- Reservar el slug de apartado `editar` (choca con la ruta `/p/:slug/editar`).
 - `feat: gestión de apartados del menú`
 
 **Paso 10 – Submódulos (parciales)**

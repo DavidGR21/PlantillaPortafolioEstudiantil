@@ -1,0 +1,341 @@
+/* =====================================================================
+   Vista pública del portafolio (prefijo pf-)
+   ===================================================================== */
+.pf {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.pf-preview-banner {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  color: #92400e;
+  background: #fef3c7;
+}
+
+/* ---------- Cabecera ---------------------------------------------------- */
+.pf-header {
+  padding: 2.5rem 1.5rem 1.5rem;
+  background: linear-gradient(160deg, var(--color-primary-soft), var(--color-surface) 70%);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pf-header__inner {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.pf-header__avatar {
+  width: 4.5rem;
+  height: 4.5rem;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.pf-header__avatar--initials {
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-primary);
+}
+
+.pf-header__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pf-header__title {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.pf-header__subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+}
+
+.pf-header__owner {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.pf-header__edit {
+  align-self: flex-start;
+}
+
+.pf-header__description {
+  max-width: 64rem;
+  margin: 1.25rem auto 0;
+  color: var(--color-text-muted);
+  white-space: pre-line;
+}
+
+/* ---------- Menú de apartados -------------------------------------------- */
+.pf-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pf-nav__list {
+  display: flex;
+  gap: 0.25rem;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.pf-nav__link {
+  display: block;
+  padding: 0.85rem 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+
+.pf-nav__link:hover {
+  color: var(--color-text);
+}
+
+.pf-nav__link--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* ---------- Contenido ---------------------------------------------------- */
+.pf-main {
+  flex: 1;
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.pf-section__title {
+  margin: 0 0 1.25rem;
+  font-size: 1.6rem;
+}
+
+.pf-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.pf-tabs__tab {
+  padding: 0.45rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.pf-tabs__tab:hover {
+  color: var(--color-text);
+}
+
+.pf-tabs__tab--active,
+.pf-tabs__tab--active:hover {
+  color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.pf-subsection__title {
+  margin: 0 0 1rem;
+  font-size: 1.15rem;
+  color: var(--color-text-muted);
+}
+
+.pf-posts {
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* ---------- Publicación -------------------------------------------------- */
+.pf-post {
+  padding: 1.25rem 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.pf-post__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+}
+
+.pf-post__title {
+  margin: 0;
+  font-size: 1.15rem;
+  overflow-wrap: anywhere;
+}
+
+.pf-post__date {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.pf-post__description {
+  margin: 0.6rem 0 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Archivos ----------------------------------------------------- */
+.pf-files {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.pf-files__images,
+.pf-files__docs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-files__images {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: 0.5rem;
+}
+
+.pf-files__images img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.pf-files__docs {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.pf-file {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  color: var(--color-text);
+  text-decoration: none;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.pf-file:hover {
+  border-color: var(--color-primary);
+}
+
+.pf-file__icon {
+  padding: 0.3rem 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--color-danger);
+  border-radius: var(--radius-sm);
+}
+
+.pf-file__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pf-file__size {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Vacíos y pie ------------------------------------------------- */
+.pf-empty {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.pf-empty--large {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.pf-empty--large p {
+  margin: 0;
+}
+
+.pf-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+}
+
+@media (max-width: 640px) {
+  .pf-header {
+    padding: 1.75rem 1rem 1.25rem;
+  }
+
+  .pf-header__inner {
+    flex-wrap: wrap;
+  }
+
+  .pf-header__avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .pf-header__edit {
+    order: 3;
+  }
+
+  .pf-main {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+
+  .pf-post {
+    padding: 1rem;
+  }
+}

@@ -3,6 +3,7 @@ import { ProtectedRoute } from './ProtectedRoute.jsx'
 import { AdminRoute } from './AdminRoute.jsx'
 import HomePage from '../pages/public/HomePage.jsx'
 import NotFoundPage from '../pages/public/NotFoundPage.jsx'
+import PortfolioPage from '../pages/public/PortfolioPage.jsx'
 import LoginPage from '../pages/auth/LoginPage.jsx'
 import DashboardPage from '../pages/dashboard/DashboardPage.jsx'
 import AdminHomePage from '../pages/admin/AdminHomePage.jsx'
@@ -13,6 +14,8 @@ export function AppRoutes() {
       {/* Públicas */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/p/:slug" element={<PortfolioPage />} />
+      <Route path="/p/:slug/:sectionSlug" element={<PortfolioPage />} />
 
       {/* Requieren sesión */}
       <Route element={<ProtectedRoute />}>
