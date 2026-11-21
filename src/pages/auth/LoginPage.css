@@ -1,39 +1,517 @@
-.login {
-  display: grid;
-  place-items: center;
-  min-height: 100vh;
-  padding: 1.5rem;
-  background: linear-gradient(160deg, var(--color-primary-soft), var(--color-bg) 60%);
+/* =====================================================================
+   Inicio de sesión — fondo de marca + formulario de vidrio esmerilado
+   Colores: azul #0E7490 · blanco #ECFEFF · rosa #FB7185
+   ===================================================================== */
+.auth {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* Encaja justo en la pantalla. Si no cabe (pantallas diminutas o el teclado
+     del móvil abierto), se puede desplazar en vez de cortar el formulario. */
+  height: 100vh;
+  height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: var(--brand-light);
+  background: linear-gradient(140deg, #0b3a4a 0%, var(--brand-primary) 55%, #0a5466 100%);
+  isolation: isolate;
 }
 
-.login__card {
+/* ---------- Fondo decorativo -------------------------------------------- */
+.auth__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.auth__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(8px);
+}
+
+/* Rosa: asoma por la esquina del formulario para que el desenfoque se note
+   sin quedar detrás del texto. */
+.auth__orb--rose {
+  top: 7%;
+  right: 5%;
+  width: 17rem;
+  height: 17rem;
+  background: radial-gradient(circle at 40% 40%, #fda4af, var(--brand-accent) 50%, rgb(251 113 133 / 0) 70%);
+  opacity: 0.6;
+}
+
+.auth__orb--light {
+  bottom: -6rem;
+  right: 26%;
+  width: 26rem;
+  height: 26rem;
+  background: radial-gradient(circle, rgb(236 254 255 / 0.55), rgb(236 254 255 / 0) 68%);
+}
+
+.auth__orb--teal {
+  top: -10rem;
+  left: -8rem;
+  width: 34rem;
+  height: 34rem;
+  background: radial-gradient(circle, rgb(103 232 249 / 0.35), rgb(103 232 249 / 0) 65%);
+}
+
+/* Retícula de puntos muy sutil */
+.auth__grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgb(236 254 255 / 0.14) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, black 30%, transparent 100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .auth__orb--rose {
+    animation: orb-drift 14s ease-in-out infinite alternate;
+  }
+
+  .auth__orb--light {
+    animation: orb-drift 18s ease-in-out infinite alternate-reverse;
+  }
+}
+
+@keyframes orb-drift {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(-2.5rem, 1.5rem) scale(1.06);
+  }
+}
+
+/* ---------- Barra superior ---------------------------------------------- */
+.auth__top {
+  position: absolute;
+  top: clamp(0.75rem, 2.2vh, 1.25rem);
+  left: max(1.5rem, calc((100% - 72rem) / 2 + 1.5rem));
+  z-index: 2;
+}
+
+.auth__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem 0.45rem 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--brand-light);
+  text-decoration: none;
+  background: rgb(236 254 255 / 0.08);
+  border: 1px solid rgb(236 254 255 / 0.18);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  transition: background-color 0.15s ease;
+}
+
+.auth__back:hover {
+  background: rgb(236 254 255 / 0.16);
+}
+
+.auth__back svg {
+  transition: transform 0.15s ease;
+}
+
+.auth__back:hover svg {
+  transform: translateX(-3px);
+}
+
+/* ---------- Distribución -------------------------------------------------- */
+.auth__layout {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
+  align-items: center;
+  gap: clamp(2.5rem, 7vw, 6rem);
   width: 100%;
-  max-width: 24rem;
-  padding: 2rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: clamp(3.5rem, 8vh, 4.5rem) 1.5rem clamp(1rem, 4vh, 2.5rem);
 }
 
-.login__title {
-  margin: 0;
-  font-size: 1.5rem;
+/* ---------- Columna de marca ---------------------------------------------- */
+.auth__logo {
+  display: inline-block;
+  text-decoration: none;
 }
 
-.login__subtitle {
-  margin: 0.25rem 0 1.5rem;
-  color: var(--color-text-muted);
+.auth__headline {
+  max-width: 32rem;
+  margin: clamp(1rem, 3.5vh, 2.25rem) 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, min(4vw, 5.6vh), 3.1rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #ffffff;
 }
 
-.login__form {
+.auth__headline em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--brand-light);
+  background-image: linear-gradient(transparent 80%, rgb(251 113 133 / 0.7) 80%, rgb(251 113 133 / 0.7) 93%, transparent 93%);
+}
+
+.auth__lead {
+  max-width: 28rem;
+  margin: clamp(0.75rem, 2vh, 1.25rem) 0 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgb(236 254 255 / 0.82);
+}
+
+.auth__benefits {
   display: grid;
-  gap: 1rem;
+  gap: clamp(0.6rem, 1.5vh, 0.9rem);
+  margin: clamp(1.25rem, 3.5vh, 2.25rem) 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.login__footer {
-  margin: 1.5rem 0 0;
+.auth__benefits li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.975rem;
+  color: rgb(236 254 255 / 0.92);
+}
+
+.auth__benefit-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--brand-accent);
+  background: rgb(236 254 255 / 0.1);
+  border: 1px solid rgb(236 254 255 / 0.2);
+  border-radius: 0.7rem;
+}
+
+/* ---------- Tarjeta de vidrio --------------------------------------------- */
+.glass-card {
+  position: relative;
+  padding: clamp(1.25rem, 4vh, 2.25rem) 2rem clamp(1rem, 3vh, 1.75rem);
+  background: linear-gradient(155deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.07));
+  border: 1px solid rgb(255 255 255 / 0.32);
+  border-radius: 1.75rem;
+  box-shadow:
+    0 30px 60px -20px rgb(3 25 33 / 0.55),
+    inset 0 1px 0 rgb(255 255 255 / 0.35);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+}
+
+/* Sin soporte de desenfoque: fondo más opaco para mantener la legibilidad */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-card {
+    background: rgb(11 58 74 / 0.88);
+  }
+}
+
+.glass-card__head {
+  text-align: center;
+}
+
+.glass-card__badge {
+  display: inline-grid;
+  place-items: center;
+  width: clamp(2.6rem, 6.2vh, 3.25rem);
+  height: clamp(2.6rem, 6.2vh, 3.25rem);
+  color: var(--brand-light);
+  background: linear-gradient(145deg, rgb(251 113 133 / 0.95), #f43f5e);
+  border-radius: 1rem;
+  box-shadow: 0 12px 24px -10px rgb(244 63 94 / 0.7);
+}
+
+.glass-card__title {
+  margin: clamp(0.5rem, 1.8vh, 1.1rem) 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 3.8vh, 1.85rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.glass-card__subtitle {
+  margin: 0.4rem 0 0;
+  font-size: 0.95rem;
+  color: rgb(236 254 255 / 0.78);
+}
+
+.glass-card__footer {
+  margin: clamp(0.9rem, 2.6vh, 1.5rem) 0 0;
+  padding-top: clamp(0.75rem, 2.2vh, 1.25rem);
   font-size: 0.875rem;
   text-align: center;
-  color: var(--color-text-muted);
+  color: rgb(236 254 255 / 0.75);
+  border-top: 1px solid rgb(255 255 255 / 0.16);
+}
+
+.glass-card__footer strong {
+  font-weight: 600;
+  color: var(--brand-light);
+}
+
+/* ---------- Formulario ---------------------------------------------------- */
+.glass-form {
+  display: grid;
+  gap: clamp(0.75rem, 2vh, 1.15rem);
+  margin-top: clamp(1rem, 3vh, 1.75rem);
+}
+
+.glass-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.glass-field label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--brand-light);
+}
+
+.glass-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.glass-input__icon {
+  position: absolute;
+  left: 0.95rem;
+  color: rgb(236 254 255 / 0.7);
+  pointer-events: none;
+  transition: color 0.15s ease;
+}
+
+.glass-input input {
+  width: 100%;
+  min-height: clamp(2.65rem, 6.2vh, 3.1rem);
+  padding: 0.6rem 3rem 0.6rem 2.85rem;
+  font: inherit;
+  font-size: 1rem;
+  color: #ffffff;
+  background: rgb(255 255 255 / 0.1);
+  border: 1px solid rgb(255 255 255 / 0.28);
+  border-radius: 0.95rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.glass-input input::placeholder {
+  color: rgb(236 254 255 / 0.45);
+}
+
+.glass-input input:hover {
+  border-color: rgb(255 255 255 / 0.45);
+}
+
+.glass-input input:focus {
+  outline: none;
+  background: rgb(255 255 255 / 0.16);
+  border-color: var(--brand-accent);
+  box-shadow: 0 0 0 4px rgb(251 113 133 / 0.25);
+}
+
+.glass-input:focus-within .glass-input__icon {
+  color: var(--brand-accent);
+}
+
+.glass-input input[aria-invalid='true'] {
+  border-color: rgb(251 113 133 / 0.8);
+}
+
+/* Autocompletado del navegador: mantener el estilo de vidrio */
+.glass-input input:-webkit-autofill,
+.glass-input input:-webkit-autofill:hover,
+.glass-input input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff;
+  caret-color: #ffffff;
+  box-shadow: 0 0 0 1000px rgb(19 94 117 / 0.92) inset;
+  transition: background-color 9999s ease-out;
+}
+
+.glass-input__toggle {
+  position: absolute;
+  right: 0.45rem;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: rgb(236 254 255 / 0.75);
+  background: none;
+  border: none;
+  border-radius: 0.7rem;
+  cursor: pointer;
+}
+
+.glass-input__toggle:hover {
+  color: #ffffff;
+  background: rgb(255 255 255 / 0.12);
+}
+
+.glass-input__toggle:focus-visible,
+.glass-submit:focus-visible,
+.auth__back:focus-visible {
+  outline: 3px solid var(--brand-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Error --------------------------------------------------------- */
+.glass-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #ffffff;
+  background: rgb(225 29 72 / 0.28);
+  border: 1px solid rgb(251 113 133 / 0.55);
+  border-radius: 0.85rem;
+}
+
+.glass-alert svg {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  color: #fda4af;
+}
+
+/* ---------- Botón ---------------------------------------------------------- */
+.glass-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: clamp(2.65rem, 6.2vh, 3.1rem);
+  margin-top: 0.35rem;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--brand-primary-dark);
+  background: var(--brand-light);
+  border: none;
+  border-radius: 0.95rem;
+  box-shadow: 0 14px 28px -14px rgb(0 0 0 / 0.55);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.glass-submit:hover:not(:disabled) {
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 18px 32px -14px rgb(0 0 0 / 0.6);
+}
+
+.glass-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.glass-submit__spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Responsive ---------------------------------------------------- */
+/* Escritorio con poca altura: se ocultan los elementos decorativos primero */
+@media (min-width: 901px) and (max-height: 640px) {
+  .glass-card__badge,
+  .auth__lead {
+    display: none;
+  }
+
+  .glass-card__title {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .auth__layout {
+    grid-template-columns: minmax(0, 28rem);
+    align-content: center;
+    justify-content: center;
+    gap: clamp(1rem, 3vh, 2rem);
+  }
+
+  .auth__brand {
+    text-align: center;
+  }
+
+  /* En pantallas pequeñas solo se muestra el logo sobre el formulario */
+  .auth__headline,
+  .auth__lead,
+  .auth__benefits {
+    display: none;
+  }
+
+  .auth__orb--rose {
+    top: 4%;
+    right: -6rem;
+    width: 14rem;
+    height: 14rem;
+    opacity: 0.5;
+  }
+}
+
+/* Móvil o tableta con poca altura: primero se oculta el ícono, luego el logo */
+@media (max-width: 900px) and (max-height: 760px) {
+  .glass-card__badge {
+    display: none;
+  }
+
+  .glass-card__title {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 900px) and (max-height: 600px) {
+  .auth__brand {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .glass-card {
+    padding-inline: 1.25rem;
+    border-radius: 1.4rem;
+  }
+
+  .auth__top {
+    left: 1rem;
+  }
+
+  .auth__layout {
+    padding-inline: 1rem;
+  }
+}
+
+/* Pantallas muy bajas (p. ej. móvil pequeño o con el teclado abierto) */
+@media (max-height: 520px) {
+  .auth__layout {
+    padding-top: 3.1rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .glass-card__subtitle {
+    display: none;
+  }
+
+  .glass-form {
+    margin-top: 0.85rem;
+  }
 }

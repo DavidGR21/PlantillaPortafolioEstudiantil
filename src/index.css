@@ -19,7 +19,20 @@
   --radius-lg: 14px;
   --shadow-md: 0 4px 16px rgb(15 23 42 / 0.08);
 
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* ---------- Identidad de marca ---------------------------------------- */
+  --brand-primary: #0e7490; /* azul principal */
+  --brand-primary-dark: #155e75;
+  --brand-deep: #0b3a4a;
+  --brand-light: #ecfeff; /* blanco de marca */
+  --brand-light-2: #cffafe;
+  --brand-accent: #fb7185; /* rosa: contraste y detalles */
+  --brand-accent-strong: #e11d48; /* rosa legible como texto sobre blanco */
+  --brand-ink: #0b2530; /* títulos */
+
+  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  font-family: var(--font-sans);
   line-height: 1.5;
   color: var(--color-text);
   background-color: var(--color-bg);

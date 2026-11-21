@@ -1,0 +1,48 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  line-height: 1;
+}
+
+.logo-mark {
+  flex-shrink: 0;
+  display: block;
+}
+
+.logo__text {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.logo__name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--brand-ink);
+}
+
+.logo__tagline {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+}
+
+.logo--light .logo__name {
+  color: var(--brand-light);
+}
+
+.logo--light .logo__tagline {
+  color: var(--brand-accent);
+}
+
+/* Sobre fondos oscuros, el isotipo azul necesita un borde claro para destacar */
+.logo--light .logo-mark {
+  border-radius: 27.5%;
+  box-shadow:
+    0 0 0 1.5px rgb(236 254 255 / 0.45),
+    0 10px 22px -8px rgb(0 0 0 / 0.45);
+}

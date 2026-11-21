@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 340" fill="none" role="img" aria-labelledby="t">
+  <title id="t">Carpeta con trabajos académicos organizados y un birrete</title>
+  <defs>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0B2530" flood-opacity="0.16"/>
+    </filter>
+    <linearGradient id="front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0E7490"/>
+      <stop offset="1" stop-color="#155E75"/>
+    </linearGradient>
+    <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#ECFEFF" opacity="0.35"/>
+    </pattern>
+  </defs>
+
+  <circle cx="320" cy="90" r="70" fill="#FB7185" opacity="0.18"/>
+  <rect x="20" y="210" width="112" height="98" fill="url(#dots)"/>
+
+  <!-- Parte trasera de la carpeta -->
+  <path d="M78 96a12 12 0 0 1 12-12h62l18 18h132a12 12 0 0 1 12 12v150H78z" fill="#155E75" filter="url(#sh)"/>
+
+  <!-- Hojas -->
+  <g transform="rotate(-6 170 170)">
+    <rect x="112" y="96" width="140" height="170" rx="10" fill="#FFFFFF"/>
+    <rect x="130" y="118" width="80" height="9" rx="4.5" fill="#0E7490"/>
+    <rect x="130" y="136" width="104" height="6" rx="3" fill="#CBD5E1"/>
+    <rect x="130" y="149" width="92" height="6" rx="3" fill="#CBD5E1"/>
+  </g>
+  <g transform="rotate(5 240 170)">
+    <rect x="172" y="88" width="140" height="176" rx="10" fill="#FFFFFF"/>
+    <rect x="190" y="108" width="104" height="56" rx="8" fill="#CFFAFE"/>
+    <circle cx="276" cy="122" r="7" fill="#FB7185"/>
+    <path d="M190 156l20-20 14 13 10-8 26 21v2a6 6 0 0 1-6 6h-58a6 6 0 0 1-6-6z" fill="#0E7490" opacity="0.6"/>
+    <rect x="190" y="176" width="88" height="8" rx="4" fill="#0E7490"/>
+    <rect x="190" y="192" width="70" height="6" rx="3" fill="#CBD5E1"/>
+  </g>
+
+  <!-- Parte frontal de la carpeta -->
+  <path d="M68 168a12 12 0 0 1 12-12h256a12 12 0 0 1 11.6 15l-26 98a12 12 0 0 1-11.6 9H80a12 12 0 0 1-12-12z" fill="url(#front)"/>
+  <rect x="100" y="196" width="96" height="28" rx="14" fill="#FB7185"/>
+  <rect x="116" y="207" width="64" height="6" rx="3" fill="#FFFFFF"/>
+  <rect x="100" y="238" width="150" height="7" rx="3.5" fill="#ECFEFF" opacity="0.55"/>
+  <rect x="100" y="252" width="110" height="7" rx="3.5" fill="#ECFEFF" opacity="0.35"/>
+
+  <!-- Birrete -->
+  <g transform="translate(286 40)">
+    <path d="M44 4l44 20-44 20L0 24z" fill="#0B2530"/>
+    <path d="M18 32v14c0 5.5 11.6 10 26 10s26-4.5 26-10V32L44 44z" fill="#164E63"/>
+    <path d="M88 24v24" stroke="#FB7185" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="88" cy="53" r="5" fill="#FB7185"/>
+  </g>
+</svg>
