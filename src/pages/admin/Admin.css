@@ -1,0 +1,255 @@
+/* =====================================================================
+   Panel de administración
+   ===================================================================== */
+.admin {
+  max-width: 72rem;
+}
+
+.admin__header {
+  margin-bottom: 1.5rem;
+}
+
+.admin__title {
+  margin: 0 0 1rem;
+}
+
+.admin__tabs {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin__tab {
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+
+.admin__tab:hover {
+  color: var(--color-text);
+}
+
+.admin__tab--active,
+.admin__tab--active:hover {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.admin__tab--soon {
+  cursor: default;
+  opacity: 0.5;
+}
+
+/* ---------- Sección ------------------------------------------------------ */
+.admin-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-section__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-section__title {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.admin-section__header .text-muted {
+  margin: 0.25rem 0 0;
+}
+
+.admin-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-toolbar__search {
+  width: 100%;
+  max-width: 24rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  color: inherit;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.admin-toolbar__search:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.admin-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-loading {
+  display: grid;
+  place-items: center;
+  padding: 3rem 0;
+}
+
+.admin-empty {
+  margin: 0;
+  padding: 2rem 0;
+  text-align: center;
+}
+
+/* ---------- Tabla -------------------------------------------------------- */
+.table-wrap {
+  overflow-x: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-table th {
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-table td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table__row--inactive td:not(.admin-table__actions) {
+  opacity: 0.6;
+}
+
+.admin-table__actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.admin-table__actions .btn + .btn {
+  margin-left: 0.35rem;
+}
+
+.user-cell {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.user-cell .text-muted {
+  font-size: 0.85rem;
+}
+
+/* En móvil la tabla se convierte en tarjetas */
+@media (max-width: 760px) {
+  .table-wrap {
+    overflow: visible;
+    background: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  .admin-table thead {
+    display: none;
+  }
+
+  .admin-table,
+  .admin-table tbody,
+  .admin-table tr,
+  .admin-table td {
+    display: block;
+  }
+
+  .admin-table tr {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .admin-table td {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.4rem 1rem;
+    border: none;
+  }
+
+  .admin-table td[data-label]::before {
+    content: attr(data-label);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .admin-table td[data-label='Usuario'] {
+    display: block;
+  }
+
+  .admin-table td[data-label='Usuario']::before {
+    content: none;
+  }
+
+  .admin-table__actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    padding-top: 0.6rem !important;
+    white-space: normal;
+  }
+}
+
+/* ---------- Credenciales ------------------------------------------------- */
+.credentials {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0;
+  padding: 1rem;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+}
+
+.credentials dt {
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.credentials dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.credentials code {
+  font-size: 1rem;
+  font-weight: 700;
+}

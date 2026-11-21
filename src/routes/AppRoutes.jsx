@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from './ProtectedRoute.jsx'
 import { AdminRoute } from './AdminRoute.jsx'
 import HomePage from '../pages/public/HomePage.jsx'
@@ -7,7 +7,8 @@ import PortfolioPage from '../pages/public/PortfolioPage.jsx'
 import LoginPage from '../pages/auth/LoginPage.jsx'
 import DashboardPage from '../pages/dashboard/DashboardPage.jsx'
 import EditorPage from '../pages/editor/EditorPage.jsx'
-import AdminHomePage from '../pages/admin/AdminHomePage.jsx'
+import AdminLayout from '../pages/admin/AdminLayout.jsx'
+import AdminUsersPage from '../pages/admin/AdminUsersPage.jsx'
 
 export function AppRoutes() {
   return (
@@ -26,7 +27,10 @@ export function AppRoutes() {
 
         {/* Requieren rol admin */}
         <Route element={<AdminRoute />}>
-          <Route path="/admin" element={<AdminHomePage />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="usuarios" replace />} />
+            <Route path="usuarios" element={<AdminUsersPage />} />
+          </Route>
         </Route>
       </Route>
 

@@ -3,15 +3,17 @@ import { Modal } from './Modal.jsx'
 import { Spinner } from './Spinner.jsx'
 
 /**
- * Confirmación para acciones destructivas.
+ * Diálogo de confirmación (por defecto, para acciones destructivas).
  * onConfirm puede ser async: mientras se ejecuta, el diálogo queda bloqueado;
  * si lanza un error, se muestra dentro del diálogo.
+ * variant: 'danger' (rojo) | 'primary' (acciones no destructivas, p. ej. activar).
  */
 export function ConfirmDialog({
   title,
   children,
   confirmLabel = 'Eliminar',
   busyLabel = 'Eliminando…',
+  variant = 'danger',
   onConfirm,
   onClose,
 }) {
@@ -44,7 +46,7 @@ export function ConfirmDialog({
           <button type="button" className="btn btn--ghost" onClick={onClose} disabled={isBusy}>
             Cancelar
           </button>
-          <button type="button" className="btn btn--danger" onClick={handleConfirm} disabled={isBusy}>
+          <button type="button" className={`btn btn--${variant}`} onClick={handleConfirm} disabled={isBusy}>
             {isBusy ? <Spinner size="sm" label={busyLabel} /> : confirmLabel}
           </button>
         </div>

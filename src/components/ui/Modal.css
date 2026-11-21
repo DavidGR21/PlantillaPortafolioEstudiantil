@@ -66,3 +66,8 @@
     flex-direction: column-reverse;
   }
 }
+
+/* Cuerpo del diálogo de confirmación */
+.confirm-dialog__body p {
+  margin: 0;
+}

@@ -156,6 +156,22 @@ a {
   background: var(--color-danger-soft);
 }
 
+.badge--info {
+  color: var(--color-primary-hover);
+  background: var(--color-primary-soft);
+}
+
+.badge--neutral {
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+/* Botón fantasma con texto rojo (acciones delicadas no destructivas del todo) */
+.btn--text-danger {
+  color: var(--color-danger);
+}
+
 /* ---------- Formularios ------------------------------------------------- */
 .field {
   display: grid;
@@ -190,8 +206,41 @@ a {
   resize: vertical;
 }
 
+.field select {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  color: inherit;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.field select:disabled {
+  opacity: 0.6;
+}
+
+/* Dos campos en una fila (se apilan en móvil) */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1rem;
+}
+
+/* Contraseña + botón «Generar» */
+.password-field {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.password-field .field__with-action {
+  flex: 1;
+}
+
 .field input:focus,
-.field textarea:focus {
+.field textarea:focus,
+.field select:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-soft);

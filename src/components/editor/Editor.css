@@ -232,11 +232,6 @@
   color: var(--color-danger);
 }
 
-/* ---------- Diálogo de confirmación ---------------------------------------- */
-.confirm-dialog__body p {
-  margin: 0;
-}
-
 /* ---------- Panel de detalle: parciales y publicaciones -------------------- */
 .editable-list {
   display: grid;

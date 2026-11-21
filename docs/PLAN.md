@@ -204,7 +204,7 @@ Cada paso termina con algo que se puede probar. Sugerencia de mensaje de commit 
 - `feat(web): visor de PDF e imágenes`
 
 ### Fase 5 – Administración
-**Paso 15 – Gestión de usuarios (admin)**
+**Paso 15 – Gestión de usuarios (admin)** ✅
 - Crear usuario (email, nombre, contraseña temporal, rol), listar, activar/desactivar, cambiar `max_portfolios`, restablecer contraseña. Registrar en `admin_actions`.
 - `feat(admin): gestión de usuarios`
 
