@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Check } from 'lucide-react'
 import { Modal } from '../ui/Modal.jsx'
 import { Spinner } from '../ui/Spinner.jsx'
 import { useSlugAvailability } from '../../hooks/useSlugAvailability.js'
@@ -123,7 +124,9 @@ export function PortfolioSettingsModal({ portfolio, onSaved, onClose }) {
                 aria-label={preset.name}
                 aria-pressed={color === preset.value}
                 title={preset.name}
-              />
+              >
+                {color === preset.value && <Check size={15} strokeWidth={3} aria-hidden="true" />}
+              </button>
             ))}
             <label className="color-swatch color-swatch--custom" title="Elegir otro color">
               <input

@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { Check, LoaderCircle, Paperclip, Trash2, X } from 'lucide-react'
 import { ConfirmDialog } from '../ui/ConfirmDialog.jsx'
 import { FileViewer } from '../portfolio/FileViewer.jsx'
 import * as fileService from '../../services/fileService.js'
@@ -125,7 +126,7 @@ export function PostFiles({ post, onChanged }) {
                 aria-label={`Eliminar ${file.name}`}
                 title="Eliminar"
               >
-                ×
+                <X size={14} />
               </button>
             </li>
           ))}
@@ -155,7 +156,7 @@ export function PostFiles({ post, onChanged }) {
                 aria-label={`Eliminar ${file.name}`}
                 title="Eliminar"
               >
-                🗑
+                <Trash2 size={15} />
               </button>
             </li>
           ))}
@@ -171,7 +172,11 @@ export function PostFiles({ post, onChanged }) {
                 <span className="upload-item__status">
                   {item.status === 'pending' && 'En espera'}
                   {item.status === 'uploading' && `${Math.round(item.progress * 100)}%`}
-                  {item.status === 'done' && 'Subido ✓'}
+                  {item.status === 'done' && (
+                    <>
+                      <Check size={13} aria-hidden="true" /> Subido
+                    </>
+                  )}
                   {item.status === 'error' && item.error}
                 </span>
               </div>
@@ -220,14 +225,18 @@ export function PostFiles({ post, onChanged }) {
             }}
           />
           {isUploading ? (
-            'Subiendo archivos…'
+            <span className="dropzone__row">
+              <LoaderCircle className="spin" size={16} aria-hidden="true" />
+              Subiendo archivos…
+            </span>
           ) : (
-            <>
-              <strong>Agregar archivos</strong> o arrastrarlos aquí
-              <span className="dropzone__hint">
-                PDF (máx. 50 MB) o imágenes JPG, PNG, WEBP, GIF (máx. 10 MB) · quedan {remaining}
+            <span className="dropzone__row">
+              <Paperclip size={16} aria-hidden="true" />
+              <span>
+                <strong>Agregar archivos</strong> o arrastrarlos aquí
               </span>
-            </>
+              <span className="dropzone__hint">· quedan {remaining}</span>
+            </span>
           )}
         </label>
       ) : (

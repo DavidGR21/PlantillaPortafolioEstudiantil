@@ -37,7 +37,11 @@ function toPortfolio(row) {
     updatedAt: row.updated_at,
     ...(row.sections_count !== undefined && {
       sectionsCount: row.sections_count,
+      subsectionsCount: row.subsections_count,
       postsCount: row.posts_count,
+      filesCount: row.files_count,
+      // Última actividad real: el portafolio o cualquier contenido dentro de él.
+      lastActivityAt: row.last_activity_at,
     }),
   }
 }
@@ -56,15 +60,27 @@ function mapDbError(error) {
 // ---------- GET ----------------------------------------------------------
 
 async function list(req, res, user) {
+  // Contadores y última actividad en una sola pasada por el contenido.
+  // (portfolios.updated_at solo cambia al editar el portafolio, no al agregar
+  // apartados o publicaciones; por eso se calcula la actividad real.)
   const rows = await sql`
     SELECT p.*,
       (SELECT count(*)::int FROM sections s WHERE s.portfolio_id = p.id) AS sections_count,
-      (SELECT count(*)::int
-         FROM posts po
-         JOIN subsections ss ON ss.id = po.subsection_id
-         JOIN sections s ON s.id = ss.section_id
-        WHERE s.portfolio_id = p.id) AS posts_count
+      st.subsections_count, st.posts_count, st.files_count,
+      greatest(p.updated_at, st.last_content_at) AS last_activity_at
     FROM portfolios p
+    CROSS JOIN LATERAL (
+      SELECT
+        count(DISTINCT ss.id)::int AS subsections_count,
+        count(DISTINCT po.id)::int AS posts_count,
+        count(f.id)::int           AS files_count,
+        greatest(max(s.updated_at), max(ss.updated_at), max(po.updated_at), max(f.created_at)) AS last_content_at
+      FROM sections s
+      LEFT JOIN subsections ss ON ss.section_id = s.id
+      LEFT JOIN posts po ON po.subsection_id = ss.id
+      LEFT JOIN post_files f ON f.post_id = po.id
+      WHERE s.portfolio_id = p.id
+    ) st
     WHERE p.owner_id = ${user.id}
     ORDER BY p.created_at
   `

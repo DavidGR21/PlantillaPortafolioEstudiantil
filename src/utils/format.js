@@ -26,3 +26,37 @@ export function formatBytes(bytes) {
 export function pluralize(count, singular, plural) {
   return `${count} ${count === 1 ? singular : plural}`
 }
+
+/** Iniciales para avatares: "Ana María Pérez" -> "AP". */
+export function initialsOf(name = '') {
+  const words = name.trim().split(/\s+/).filter(Boolean)
+  if (words.length === 0) return '?'
+  const first = words[0][0]
+  const last = words.length > 1 ? words[words.length - 1][0] : ''
+  return (first + last).toUpperCase()
+}
+
+const relativeFormatter = new Intl.RelativeTimeFormat('es', { numeric: 'auto' })
+const RELATIVE_STEPS = [
+  { unit: 'minute', seconds: 60 },
+  { unit: 'hour', seconds: 3600 },
+  { unit: 'day', seconds: 86400 },
+  { unit: 'week', seconds: 604800 },
+  { unit: 'month', seconds: 2629800 },
+  { unit: 'year', seconds: 31557600 },
+]
+
+/**
+ * Tiempo relativo legible: "hace un momento", "hace 5 minutos", "ayer",
+ * "hace 3 semanas"... `now` permite fijar la fecha de referencia (pruebas).
+ */
+export function formatRelativeTime(value, now = Date.now()) {
+  if (!value) return ''
+  const seconds = (new Date(value).getTime() - now) / 1000
+  if (Math.abs(seconds) < 45) return 'hace un momento'
+  for (let i = RELATIVE_STEPS.length - 1; i >= 0; i--) {
+    const { unit, seconds: size } = RELATIVE_STEPS[i]
+    if (Math.abs(seconds) >= size) return relativeFormatter.format(Math.round(seconds / size), unit)
+  }
+  return relativeFormatter.format(Math.round(seconds / 60), 'minute')
+}

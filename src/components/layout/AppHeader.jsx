@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { LayoutGrid, ShieldCheck } from 'lucide-react'
+import { Logo } from '../brand/Logo.jsx'
 import { useAuth } from '../../hooks/useAuth.js'
 import { ChangePasswordModal } from './ChangePasswordModal.jsx'
+import { UserMenu } from './UserMenu.jsx'
 import './AppHeader.css'
 
-const navClass = ({ isActive }) => `app-header__link${isActive ? ' app-header__link--active' : ''}`
+const navClass = ({ isActive }) => `app-nav__link${isActive ? ' app-nav__link--active' : ''}`
 
 /** Barra superior del área privada (panel del estudiante y administración). */
 export function AppHeader() {
@@ -24,37 +27,32 @@ export function AppHeader() {
 
   return (
     <header className="app-header">
-      <Link to="/" className="app-header__brand">
-        Portafolio Académico
-      </Link>
+      <div className="app-header__inner">
+        <Link to="/dashboard" className="app-header__brand" aria-label="Portafolio Académico, mis portafolios">
+          <Logo size={36} />
+        </Link>
 
-      <nav className="app-header__nav" aria-label="Navegación principal">
-        <NavLink to="/dashboard" className={navClass}>
-          Mis portafolios
-        </NavLink>
-        {user?.role === 'admin' && (
-          <NavLink to="/admin" className={navClass}>
-            Administración
+        <nav className="app-nav" aria-label="Navegación principal">
+          <NavLink to="/dashboard" className={navClass}>
+            <LayoutGrid size={18} aria-hidden="true" />
+            <span className="app-nav__label">Mis portafolios</span>
           </NavLink>
-        )}
-      </nav>
+          {user?.role === 'admin' && (
+            <NavLink to="/admin" className={navClass}>
+              <ShieldCheck size={18} aria-hidden="true" />
+              <span className="app-nav__label">Administración</span>
+            </NavLink>
+          )}
+        </nav>
 
-      <div className="app-header__user">
-        <span className="app-header__name" title={user?.email}>
-          {user?.fullName}
-        </span>
-        <button
-          type="button"
-          className="btn btn--ghost btn--sm"
-          onClick={() => setIsChangingPassword(true)}
-          title="Cambiar mi contraseña"
-        >
-          <span aria-hidden="true">🔑</span>
-          <span className="app-header__btn-label">Contraseña</span>
-        </button>
-        <button type="button" className="btn btn--ghost btn--sm" onClick={handleLogout} disabled={isLeaving}>
-          {isLeaving ? 'Saliendo…' : 'Cerrar sesión'}
-        </button>
+        {user && (
+          <UserMenu
+            user={user}
+            isLeaving={isLeaving}
+            onChangePassword={() => setIsChangingPassword(true)}
+            onLogout={handleLogout}
+          />
+        )}
       </div>
 
       {isChangingPassword && <ChangePasswordModal onClose={() => setIsChangingPassword(false)} />}

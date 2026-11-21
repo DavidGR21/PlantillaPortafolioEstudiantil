@@ -1,25 +1,28 @@
 import { useId, useState } from 'react'
+import { ArrowDown, ArrowUp, Check, GripVertical, LoaderCircle, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { ConfirmDialog } from '../ui/ConfirmDialog.jsx'
-import { Spinner } from '../ui/Spinner.jsx'
+import { useEditorBusy } from './busyContext.js'
+import { SortableList } from './SortableList.jsx'
 
 /**
- * Lista ordenable y editable (apartados, parciales...): seleccionar, agregar,
- * renombrar, subir/bajar y eliminar con confirmación.
+ * Lista vertical editable y reordenable (apartados del menú): seleccionar,
+ * agregar, renombrar, arrastrar o mover con flechas, y eliminar con confirmación.
  *
- * Las operaciones (onCreate, onRename, onReorder, onDelete) llaman a la API;
- * después se ejecuta onChanged() (recargar datos) y se espera a que termine.
+ * onCreate / onRename / onReorder / onDelete llaman a la API; después se
+ * ejecuta onChanged() (recargar) y se espera a que termine. Reordenar bloquea
+ * el editor con una pantalla de carga hasta que el orden queda guardado.
  */
 export function EditableList({
   title,
   titleTag: TitleTag = 'h2',
-  noun, // "apartado", "parcial"
+  noun,
   items,
   max,
   selectedId,
   onSelect,
   emptyText,
   addPlaceholder,
-  deleteWarning, // (item) => texto/JSX del diálogo de eliminación
+  deleteWarning,
   onCreate,
   onRename,
   onReorder,
@@ -28,15 +31,15 @@ export function EditableList({
   className = '',
 }) {
   const inputId = useId()
+  const { runBlocking } = useEditorBusy()
   const [newTitle, setNewTitle] = useState('')
   const [editingId, setEditingId] = useState(null)
   const [editTitle, setEditTitle] = useState('')
   const [toDelete, setToDelete] = useState(null)
-  const [busy, setBusy] = useState(null) // 'create' | 'rename' | 'move'
+  const [busy, setBusy] = useState(null) // 'create' | 'rename'
   const [error, setError] = useState('')
 
   const atLimit = items.length >= max
-  const isBusy = busy !== null
 
   async function run(kind, action) {
     setError('')
@@ -81,15 +84,21 @@ export function EditableList({
     if (await run('rename', () => onRename(editingId, value))) setEditingId(null)
   }
 
-  function move(index, delta) {
-    const ids = items.map((i) => i.id)
-    const target = index + delta
-    ;[ids[index], ids[target]] = [ids[target], ids[index]]
-    run('move', () => onReorder(ids))
+  /** Guarda el orden bloqueando el editor; si falla, muestra el error. */
+  async function reorder(ids) {
+    setError('')
+    try {
+      await runBlocking('Guardando el nuevo orden…', async () => {
+        await onReorder(ids)
+        await onChanged()
+      })
+    } catch (err) {
+      setError(err.message)
+      throw err
+    }
   }
 
   async function handleDelete() {
-    // Si falla, ConfirmDialog muestra el error y sigue abierto.
     await onDelete(toDelete.id)
     setToDelete(null)
     onChanged().catch((err) => setError(err.message))
@@ -97,23 +106,29 @@ export function EditableList({
 
   return (
     <div className={`editable-list ${className}`}>
-      <header className="editor-panel__header">
-        <TitleTag className="editor-panel__title">{title}</TitleTag>
-        <span className="text-muted editor-panel__count">
+      <header className="editable-list__header">
+        <TitleTag className="editable-list__title">{title}</TitleTag>
+        <span className="editable-list__count">
           {items.length}/{max}
         </span>
       </header>
 
       {items.length === 0 ? (
-        <p className="text-muted editable-list__empty">{emptyText}</p>
+        <p className="editable-list__empty">{emptyText}</p>
       ) : (
-        <ol className="editable-list__items">
-          {items.map((item, index) => {
+        <SortableList
+          items={items}
+          onReorder={reorder}
+          className="editable-list__items"
+          renderItem={(item, { handle, index, isDragging, move, count }) => {
             const isSelected = item.id === selectedId
             const isEditing = item.id === editingId
-
             return (
-              <li key={item.id} className={`list-row${isSelected ? ' list-row--selected' : ''}`}>
+              <div className={`list-row${isSelected ? ' list-row--selected' : ''}${isDragging ? ' list-row--dragging' : ''}`}>
+                <button type="button" className="drag-handle" {...handle} aria-label={`Arrastrar «${item.title}» para reordenar`} title="Arrastrar para reordenar">
+                  <GripVertical size={16} aria-hidden="true" />
+                </button>
+
                 {isEditing ? (
                   <form className="list-row__rename" onSubmit={handleRename}>
                     <input
@@ -125,16 +140,11 @@ export function EditableList({
                       autoFocus
                       disabled={busy === 'rename'}
                     />
-                    <button type="submit" className="btn btn--primary btn--sm" disabled={busy === 'rename'}>
-                      {busy === 'rename' ? <Spinner size="sm" label="Guardando…" /> : 'Guardar'}
+                    <button type="submit" className="icon-btn icon-btn--primary" disabled={busy === 'rename'} aria-label="Guardar nombre" title="Guardar">
+                      {busy === 'rename' ? <LoaderCircle className="spin" size={16} /> : <Check size={16} />}
                     </button>
-                    <button
-                      type="button"
-                      className="btn btn--ghost btn--sm"
-                      onClick={() => setEditingId(null)}
-                      disabled={busy === 'rename'}
-                    >
-                      Cancelar
+                    <button type="button" className="icon-btn" onClick={() => setEditingId(null)} disabled={busy === 'rename'} aria-label="Cancelar" title="Cancelar">
+                      <X size={16} />
                     </button>
                   </form>
                 ) : (
@@ -150,53 +160,25 @@ export function EditableList({
                     </button>
 
                     <div className="list-row__actions">
-                      <button
-                        type="button"
-                        className="icon-btn"
-                        onClick={() => move(index, -1)}
-                        disabled={isBusy || index === 0}
-                        aria-label={`Subir «${item.title}»`}
-                        title="Subir"
-                      >
-                        ↑
+                      <button type="button" className="icon-btn" onClick={() => move(-1).catch(() => {})} disabled={index === 0} aria-label={`Subir «${item.title}»`} title="Subir">
+                        <ArrowUp size={15} />
                       </button>
-                      <button
-                        type="button"
-                        className="icon-btn"
-                        onClick={() => move(index, 1)}
-                        disabled={isBusy || index === items.length - 1}
-                        aria-label={`Bajar «${item.title}»`}
-                        title="Bajar"
-                      >
-                        ↓
+                      <button type="button" className="icon-btn" onClick={() => move(1).catch(() => {})} disabled={index === count - 1} aria-label={`Bajar «${item.title}»`} title="Bajar">
+                        <ArrowDown size={15} />
                       </button>
-                      <button
-                        type="button"
-                        className="icon-btn"
-                        onClick={() => startRename(item)}
-                        disabled={isBusy}
-                        aria-label={`Renombrar «${item.title}»`}
-                        title="Renombrar"
-                      >
-                        ✎
+                      <button type="button" className="icon-btn" onClick={() => startRename(item)} aria-label={`Renombrar «${item.title}»`} title="Renombrar">
+                        <Pencil size={15} />
                       </button>
-                      <button
-                        type="button"
-                        className="icon-btn icon-btn--danger"
-                        onClick={() => setToDelete(item)}
-                        disabled={isBusy}
-                        aria-label={`Eliminar «${item.title}»`}
-                        title="Eliminar"
-                      >
-                        🗑
+                      <button type="button" className="icon-btn icon-btn--danger" onClick={() => setToDelete(item)} aria-label={`Eliminar «${item.title}»`} title="Eliminar">
+                        <Trash2 size={15} />
                       </button>
                     </div>
                   </>
                 )}
-              </li>
+              </div>
             )
-          })}
-        </ol>
+          }}
+        />
       )}
 
       {error && (
@@ -217,8 +199,14 @@ export function EditableList({
           maxLength={100}
           disabled={atLimit || busy === 'create'}
         />
-        <button type="submit" className="btn btn--primary btn--sm" disabled={atLimit || !newTitle.trim() || isBusy}>
-          {busy === 'create' ? <Spinner size="sm" label="Agregando…" /> : 'Agregar'}
+        <button
+          type="submit"
+          className="btn btn--primary btn--icon"
+          disabled={atLimit || !newTitle.trim() || busy !== null}
+          aria-label={`Agregar ${noun}`}
+          title={`Agregar ${noun}`}
+        >
+          {busy === 'create' ? <LoaderCircle className="spin" size={18} /> : <Plus size={18} />}
         </button>
       </form>
 

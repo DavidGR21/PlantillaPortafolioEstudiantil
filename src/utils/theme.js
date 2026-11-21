@@ -1,9 +1,10 @@
 const HEX_COLOR = /^#(?:[0-9a-f]{3}){1,2}$/i
 
-export const DEFAULT_PRIMARY = '#2563eb'
+export const DEFAULT_PRIMARY = '#0e7490' // azul de marca
 
 /** Colores sugeridos para el portafolio (todos con buen contraste con texto blanco). */
 export const THEME_PRESETS = [
+  { name: 'Azul de marca', value: '#0e7490' },
   { name: 'Azul', value: '#2563eb' },
   { name: 'Índigo', value: '#4f46e5' },
   { name: 'Violeta', value: '#7c3aed' },

@@ -1,10 +1,10 @@
 import { EditableList } from './EditableList.jsx'
 import * as contentService from '../../services/contentService.js'
 
-/** Apartados del menú del portafolio. */
+/** Apartados del menú del portafolio (columna lateral del editor). */
 export function SectionsManager({ portfolioId, sections, selectedId, onSelect, onChanged }) {
   return (
-    <section className="editor-panel" aria-label="Apartados del menú">
+    <section className="editor-card editor-sidebar" aria-label="Apartados del menú">
       <EditableList
         title="Apartados del menú"
         noun="apartado"
@@ -12,7 +12,7 @@ export function SectionsManager({ portfolioId, sections, selectedId, onSelect, o
         max={20}
         selectedId={selectedId}
         onSelect={onSelect}
-        emptyText="Aún no hay apartados. Crea el primero (por ejemplo «Tareas» o «Proyectos»)."
+        emptyText="Aún no hay apartados. Crea el primero, por ejemplo «Tareas» o «Proyectos»."
         addPlaceholder="Nuevo apartado…"
         deleteWarning={(section) => (
           <>
